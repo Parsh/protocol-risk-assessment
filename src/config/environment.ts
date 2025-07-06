@@ -4,6 +4,10 @@ interface EnvironmentConfig {
   dataDir: string;
   logLevel: string;
   apiTimeout: number;
+  cors: {
+    origin: string[] | string | boolean;
+    credentials: boolean;
+  };
   // External API configurations
   etherscanApiKey?: string | undefined;
   coingeckoApiKey?: string | undefined;
@@ -19,6 +23,10 @@ const development: EnvironmentConfig = {
   dataDir: process.env.DATA_DIR || './data',
   logLevel: 'debug',
   apiTimeout: 30000,
+  cors: {
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000'],
+    credentials: true,
+  },
   etherscanApiKey: process.env.ETHERSCAN_API_KEY,
   coingeckoApiKey: process.env.COINGECKO_API_KEY,
   defillama: {
@@ -33,6 +41,10 @@ const production: EnvironmentConfig = {
   dataDir: process.env.DATA_DIR || './data',
   logLevel: 'info',
   apiTimeout: 45000,
+  cors: {
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || false,
+    credentials: false,
+  },
   etherscanApiKey: process.env.ETHERSCAN_API_KEY,
   coingeckoApiKey: process.env.COINGECKO_API_KEY,
   defillama: {
@@ -47,6 +59,10 @@ const test: EnvironmentConfig = {
   dataDir: './test-data',
   logLevel: 'error',
   apiTimeout: 5000,
+  cors: {
+    origin: true, // Allow all origins in test
+    credentials: true,
+  },
   defillama: {
     baseUrl: 'https://api.llama.fi',
     timeout: 5000,
@@ -67,5 +83,6 @@ const getConfig = (): EnvironmentConfig => {
   }
 };
 
+export const config = getConfig();
 export default getConfig;
 export type { EnvironmentConfig };
