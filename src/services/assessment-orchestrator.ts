@@ -16,12 +16,15 @@ import {
   Finding,
   FindingCategory,
   FindingSeverity,
-  AssessmentMetadata
+  AssessmentMetadata,
+  Blockchain
 } from '../models/index';
 import { AssessmentRepository, ProtocolRepository } from '../repositories/index';
 import { logger } from '../config/logger';
 import { RiskScoringEngine, ScoringInput } from './risk-scoring-engine';
 import { UnifiedBlockchainClient, createUnifiedBlockchainClient } from './unified-blockchain-client';
+import { UnifiedDeFiDataClient } from './unified-defi-data-client';
+import { smartContractAnalyzer } from '../analyzers/smart-contract';
 
 export interface AssessmentRequest {
   protocolId?: string;
@@ -66,6 +69,7 @@ export class AssessmentOrchestrator {
   private assessmentRepo: AssessmentRepository;
   private riskScoringEngine: RiskScoringEngine;
   private blockchainClient: UnifiedBlockchainClient;
+  private defiDataClient: UnifiedDeFiDataClient;
   private activeAssessments: Map<string, AssessmentProgress> = new Map();
 
   constructor() {
@@ -84,6 +88,9 @@ export class AssessmentOrchestrator {
         burstSize: 5
       }
     });
+
+    // Initialize DeFi data client
+    this.defiDataClient = new UnifiedDeFiDataClient();
   }
 
   /**
@@ -423,20 +430,31 @@ export class AssessmentOrchestrator {
 
       logger.info('Starting assessment processing', { assessmentId, protocolId: protocol.id });
 
-      // Simulate assessment stages for now
-      // TODO: Replace with actual analyzer implementations
+      // Stage 1: Blockchain Data Collection
+      const blockchainData = await this.collectBlockchainData(progress, protocol);
 
-      // Stage 1: Technical Analysis (placeholder)
-      await this.simulateAnalysisStage(progress, 'Technical Analysis', 25, 2000);
+      // Stage 2: DeFi Data Collection
+      const defiData = await this.collectDeFiData(progress, protocol);
 
-      // Stage 2: Governance Analysis (placeholder)
-      await this.simulateAnalysisStage(progress, 'Governance Analysis', 50, 1500);
+      // Stage 3: Technical Analysis
+      const technicalScore = await this.analyzeTechnical(progress, protocol, blockchainData);
 
-      // Stage 3: Liquidity Analysis (placeholder)
-      await this.simulateAnalysisStage(progress, 'Liquidity Analysis', 75, 1000);
+      // Stage 4: Liquidity Analysis
+      const liquidityScore = await this.analyzeLiquidity(progress, protocol, defiData);
 
-      // Stage 4: Risk Calculation (placeholder)
-      await this.simulateAnalysisStage(progress, 'Risk Calculation', 90, 500);
+      // Stage 5: Governance Analysis (placeholder for now)
+      const governanceScore = await this.analyzeGovernance(progress, protocol);
+
+      // Stage 6: Reputation Analysis (placeholder for now)
+      const reputationScore = await this.analyzeReputation(progress, protocol);
+
+      // Stage 7: Risk Calculation
+      await this.calculateFinalRisk(progress, assessmentId, protocol, {
+        technical: technicalScore,
+        governance: governanceScore,
+        liquidity: liquidityScore,
+        reputation: reputationScore
+      });
 
       // Complete the assessment
       await this.completeAssessment(assessmentId, protocol, request);
@@ -444,6 +462,362 @@ export class AssessmentOrchestrator {
     } catch (error) {
       await this.handleAssessmentError(assessmentId, error);
     }
+  }
+
+  /**
+   * Collect blockchain data for the protocol
+   */
+  private async collectBlockchainData(progress: AssessmentProgress, protocol: Protocol): Promise<any> {
+    progress.currentStage = 'Blockchain Data Collection';
+    progress.progress = 20;
+
+    try {
+      const blockchainData: any = {};
+      
+      for (const address of protocol.contractAddresses) {
+        try {
+          // Validate blockchain before use
+          const blockchainString = protocol.blockchain;
+          if (!Object.values(Blockchain).includes(blockchainString as Blockchain)) {
+            logger.warn('Unsupported blockchain, skipping contract', { 
+              blockchain: blockchainString, 
+              address 
+            });
+            continue;
+          }
+          const blockchain = blockchainString as Blockchain;
+
+          // Get contract metadata
+          const metadata = await this.blockchainClient.getContractMetadata(address, blockchain);
+          blockchainData[address] = {
+            metadata,
+            isVerified: metadata.isVerified,
+            hasSourceCode: !!metadata.sourceCode
+          };
+
+          // Get recent transactions (sample)
+          const transactions = await this.blockchainClient.getRecentTransactions(address, blockchain, 10);
+          blockchainData[address].recentTransactions = transactions;
+
+          logger.info('Collected blockchain data for contract', { 
+            assessmentId: progress.assessmentId,
+            address,
+            isVerified: metadata.isVerified
+          });
+        } catch (error) {
+          logger.warn('Failed to collect blockchain data for contract', { 
+            assessmentId: progress.assessmentId,
+            address,
+            error: error instanceof Error ? error.message : String(error)
+          });
+          blockchainData[address] = { error: error instanceof Error ? error.message : String(error) };
+        }
+      }
+
+      return blockchainData;
+    } catch (error) {
+      logger.error('Failed to collect blockchain data', { 
+        assessmentId: progress.assessmentId,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      return {};
+    }
+  }
+
+  /**
+   * Collect DeFi protocol data
+   */
+  private async collectDeFiData(progress: AssessmentProgress, protocol: Protocol): Promise<any> {
+    progress.currentStage = 'DeFi Data Collection';
+    progress.progress = 35;
+
+    try {
+      const defiData: any = {};
+
+      // Try to get protocol data by name
+      try {
+        const protocolData = await this.defiDataClient.getProtocolData(protocol.name);
+        if (protocolData) {
+          defiData.protocolInfo = protocolData;
+          logger.info('Found protocol in DeFiLlama', { 
+            assessmentId: progress.assessmentId,
+            name: protocol.name,
+            tvl: protocolData.tvl
+          });
+        }
+      } catch (error) {
+        logger.warn('Protocol not found in DeFiLlama by name', { 
+          assessmentId: progress.assessmentId,
+          name: protocol.name
+        });
+      }
+
+      // Try to get protocol data by contract address
+      for (const address of protocol.contractAddresses) {
+        try {
+          const protocolByAddress = await this.defiDataClient.getProtocolByAddress(address, protocol.blockchain);
+          if (protocolByAddress) {
+            defiData.protocolByAddress = protocolByAddress;
+            logger.info('Found protocol in DeFiLlama by address', { 
+              assessmentId: progress.assessmentId,
+              address,
+              name: protocolByAddress.name
+            });
+            break; // Found one, that's enough
+          }
+        } catch (error) {
+          logger.warn('Failed to find protocol by address', { 
+            assessmentId: progress.assessmentId,
+            address,
+            error: error instanceof Error ? error.message : String(error)
+          });
+        }
+      }
+
+      // Get market overview for context
+      try {
+        const marketOverview = await this.defiDataClient.getMarketOverview();
+        defiData.marketOverview = marketOverview;
+      } catch (error) {
+        logger.warn('Failed to get market overview', { 
+          assessmentId: progress.assessmentId,
+          error: error instanceof Error ? error.message : String(error)
+        });
+      }
+
+      return defiData;
+    } catch (error) {
+      logger.error('Failed to collect DeFi data', { 
+        assessmentId: progress.assessmentId,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      return {};
+    }
+  }
+
+  /**
+   * Analyze technical aspects based on blockchain data
+   */
+  /**
+   * Analyze technical security using Slither smart contract analysis
+   */
+  private async analyzeTechnical(progress: AssessmentProgress, protocol: Protocol, blockchainData: any): Promise<number> {
+    progress.currentStage = 'Smart Contract Security Analysis';
+    progress.progress = 50;
+
+    try {
+      logger.info('Starting technical analysis with Slither', { 
+        protocolId: protocol.id, 
+        contractAddresses: protocol.contractAddresses 
+      });
+
+      let totalTechnicalScore = 0;
+      let analyzedContracts = 0;
+      let allVulnerabilities: any[] = [];
+
+      // Analyze each contract address
+      for (const contractAddress of protocol.contractAddresses) {
+        try {
+          const contractData = blockchainData[contractAddress];
+          
+          // Skip if we don't have source code
+          if (!contractData?.sourceCode || !contractData?.isVerified) {
+            logger.warn('Skipping contract analysis - no verified source code', { 
+              contractAddress, 
+              isVerified: contractData?.isVerified,
+              hasSourceCode: !!contractData?.sourceCode 
+            });
+            continue;
+          }
+
+          // Prepare contract for analysis
+          const contractInput = {
+            contractAddress,
+            sourceCode: contractData.sourceCode,
+            contractName: contractData.contractName || protocol.name,
+            blockchain: protocol.blockchain
+          };
+
+          logger.info('Analyzing contract with Slither', { contractAddress, contractName: contractInput.contractName });
+
+          // Run Slither analysis
+          const analysisResult = await smartContractAnalyzer.analyzeContract(contractInput);
+
+          // Accumulate results
+          totalTechnicalScore += analysisResult.technicalScore;
+          analyzedContracts++;
+          allVulnerabilities = allVulnerabilities.concat(analysisResult.vulnerabilities);
+
+          logger.info('Contract analysis completed', {
+            contractAddress,
+            technicalScore: analysisResult.technicalScore,
+            vulnerabilitiesFound: analysisResult.vulnerabilities.length
+          });
+
+        } catch (error) {
+          logger.error('Contract analysis failed', { 
+            contractAddress, 
+            error: error instanceof Error ? error.message : 'Unknown error' 
+          });
+          
+          // Use a high risk score (90) for failed analysis to be conservative
+          totalTechnicalScore += 90;
+          analyzedContracts++;
+        }
+      }
+
+      // Calculate average technical score
+      let averageTechnicalScore = analyzedContracts > 0 ? totalTechnicalScore / analyzedContracts : 50;
+
+      // Apply penalties for unanalyzed contracts (conservative approach)
+      const unanalyzedContractPenalty = (protocol.contractAddresses.length - analyzedContracts) * 15;
+      averageTechnicalScore += unanalyzedContractPenalty;
+
+      // Cap the score at 100
+      averageTechnicalScore = Math.min(averageTechnicalScore, 100);
+
+      logger.info('Technical analysis completed', {
+        protocolId: protocol.id,
+        totalContracts: protocol.contractAddresses.length,
+        analyzedContracts,
+        totalVulnerabilities: allVulnerabilities.length,
+        averageTechnicalScore: Math.round(averageTechnicalScore)
+      });
+
+      return Math.round(averageTechnicalScore);
+
+    } catch (error) {
+      logger.error('Technical analysis failed', { 
+        protocolId: protocol.id, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      
+      // Return high risk score for failed technical analysis
+      return 90;
+    }
+  }
+
+  /**
+   * Analyze liquidity based on DeFi data
+   */
+  private async analyzeLiquidity(progress: AssessmentProgress, protocol: Protocol, defiData: any): Promise<number> {
+    progress.currentStage = 'Liquidity Analysis';
+    progress.progress = 65;
+
+    let score = 50; // Base score
+
+    // Check TVL if available
+    const protocolData = defiData.protocolInfo || defiData.protocolByAddress;
+    if (protocolData?.tvl) {
+      const tvl = protocolData.tvl;
+      if (tvl > 1000000) score += 15; // $1M+ TVL
+      if (tvl > 10000000) score += 10; // $10M+ TVL
+      if (tvl > 100000000) score += 10; // $100M+ TVL
+      if (tvl > 1000000000) score += 10; // $1B+ TVL
+
+      logger.info('TVL analysis completed', { 
+        assessmentId: progress.assessmentId,
+        tvl,
+        scoreBonus: Math.min(45, tvl > 1000000000 ? 45 : tvl > 100000000 ? 35 : tvl > 10000000 ? 25 : tvl > 1000000 ? 15 : 0)
+      });
+    }
+
+    // Check protocol category risk
+    if (protocolData?.category) {
+      // Lower risk categories get higher scores
+      const categoryBonus: { [key: string]: number } = {
+        'Lending': 10,
+        'DEX': 8,
+        'Yield': 5,
+        'Derivatives': -5,
+        'Synthetics': -10,
+        'Liquid Staking': 7,
+        'Bridge': -3
+      };
+      score += categoryBonus[protocolData.category] || 0;
+    }
+
+    return Math.min(Math.max(score, 0), 100);
+  }
+
+  /**
+   * Analyze governance (placeholder implementation)
+   */
+  private async analyzeGovernance(progress: AssessmentProgress, protocol: Protocol): Promise<number> {
+    progress.currentStage = 'Governance Analysis';
+    progress.progress = 75;
+
+    // Placeholder: return moderate score with some randomness
+    // TODO: Implement actual governance analysis
+    const baseScore = 60;
+    const variance = Math.floor(Math.random() * 20) - 10; // ±10 points
+    return Math.min(Math.max(baseScore + variance, 0), 100);
+  }
+
+  /**
+   * Analyze reputation (placeholder implementation)
+   */
+  private async analyzeReputation(progress: AssessmentProgress, protocol: Protocol): Promise<number> {
+    progress.currentStage = 'Reputation Analysis';
+    progress.progress = 85;
+
+    // Placeholder: return moderate score with some randomness
+    // TODO: Implement actual reputation analysis
+    const baseScore = 55;
+    const variance = Math.floor(Math.random() * 20) - 10; // ±10 points
+    return Math.min(Math.max(baseScore + variance, 0), 100);
+  }
+
+  /**
+   * Calculate final risk score
+   */
+  private async calculateFinalRisk(
+    progress: AssessmentProgress, 
+    assessmentId: string,
+    protocol: Protocol, 
+    categoryScores: CategoryScores
+  ): Promise<void> {
+    progress.currentStage = 'Risk Calculation';
+    progress.progress = 95;
+
+    const assessment = await this.assessmentRepo.findById(assessmentId);
+    if (!assessment) return;
+
+    // Generate findings based on scores
+    const findings = this.generateFindingsFromScores(protocol, categoryScores);
+    
+    // Prepare scoring input with proper metadata interface
+    const scoringInput: ScoringInput = {
+      findings,
+      protocolMetadata: {
+        ageInDays: this.calculateProtocolAge(protocol),
+        tvlUsd: this.estimateTvl(protocol),
+        transactionVolume: 0, // Will be populated from defiData when available
+        auditCount: this.estimateAuditCount(protocol)
+      }
+    };
+
+    // Calculate overall risk score
+    const riskResult = await this.riskScoringEngine.calculateRiskScore(scoringInput);
+
+    // Update assessment
+    assessment.categoryScores = categoryScores;
+    assessment.overallScore = riskResult.overallScore;
+    assessment.riskLevel = riskResult.riskLevel;
+    assessment.recommendations = riskResult.recommendations;
+    assessment.findings = findings;
+    assessment.metadata.executionTime = Date.now() - assessment.createdAt.getTime();
+    assessment.metadata.dataSourcesUsed = ['blockchain', 'defillama', 'coingecko'];
+    assessment.updatedAt = new Date();
+
+    await this.assessmentRepo.save(assessmentId, assessment);
+
+    logger.info('Risk calculation completed', { 
+      assessmentId,
+      overallScore: riskResult.overallScore,
+      riskLevel: riskResult.riskLevel,
+      categoryScores
+    });
   }
 
   /**
@@ -635,6 +1009,15 @@ export class AssessmentOrchestrator {
     }
 
     return findings;
+  }
+
+  /**
+   * Generate findings based on category scores
+   */
+  private generateFindingsFromScores(protocol: Protocol, scores: CategoryScores): Finding[] {
+    // For now, use the same logic as generateMockFindings
+    // In the future, this would use actual analyzer results
+    return this.generateMockFindings(protocol, scores);
   }
 
   /**
