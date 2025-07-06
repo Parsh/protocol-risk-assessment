@@ -1,0 +1,21 @@
+{
+  "id": "protocol-7",
+  "name": "Yearn Finance",
+  "contractAddresses": [
+    "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "YFI",
+  "website": "https://yearn.finance",
+  "documentation": "https://docs.yearn.finance",
+  "description": "A yield aggregator that optimizes DeFi yields through automated strategies and vaults.",
+  "category": "Yield Aggregator",
+  "tags": [
+    "defi",
+    "yield",
+    "aggregator",
+    "vaults"
+  ],
+  "createdAt": "2020-07-17T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

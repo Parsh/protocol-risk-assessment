@@ -1,0 +1,21 @@
+{
+  "id": "protocol-1",
+  "name": "Uniswap",
+  "contractAddresses": [
+    "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "UNI",
+  "website": "https://uniswap.org",
+  "documentation": "https://docs.uniswap.org",
+  "description": "A leading decentralized exchange (DEX) using an Automated Market Maker (AMM) model for ERC-20 token swaps.",
+  "category": "DEX",
+  "tags": [
+    "defi",
+    "trading",
+    "automated-market-maker",
+    "exchange"
+  ],
+  "createdAt": "2018-11-02T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

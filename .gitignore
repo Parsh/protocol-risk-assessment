@@ -15,11 +15,9 @@ dist/
 .env.test.local
 .env.production.local
 
-# Data directories
-data/protocols/*.json
-data/assessments/*.json
-data/cache/
-data/logs/*.log
+# Keep protocol index and real protocol data
+!data/protocols/index.json
+!data/protocols/protocol-*.json
 
 # Test data (generated during testing)
 test-data/

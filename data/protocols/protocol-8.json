@@ -1,0 +1,21 @@
+{
+  "id": "protocol-8",
+  "name": "SushiSwap",
+  "contractAddresses": [
+    "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "SUSHI",
+  "website": "https://sushi.com",
+  "documentation": "https://docs.sushi.com",
+  "description": "A community-driven DEX and DeFi suite offering swaps, yield farming, and lending.",
+  "category": "DEX",
+  "tags": [
+    "defi",
+    "exchange",
+    "yield",
+    "farming"
+  ],
+  "createdAt": "2020-08-28T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

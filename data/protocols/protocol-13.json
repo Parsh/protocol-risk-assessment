@@ -1,0 +1,21 @@
+{
+  "id": "protocol-13",
+  "name": "Liquity",
+  "contractAddresses": [
+    "0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "LQTY",
+  "website": "https://www.liquity.org",
+  "documentation": "https://docs.liquity.org",
+  "description": "A decentralized borrowing protocol issuing interest-free loans against ETH collateral.",
+  "category": "Lending",
+  "tags": [
+    "defi",
+    "borrowing",
+    "stablecoin",
+    "collateral"
+  ],
+  "createdAt": "2021-04-05T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

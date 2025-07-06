@@ -1,0 +1,21 @@
+{
+  "id": "protocol-15",
+  "name": "Maple Finance",
+  "contractAddresses": [
+    "0x33349B282065b0284d756F0577Fb39c158F935e6"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "MPL",
+  "website": "https://maple.finance",
+  "documentation": "https://docs.maple.finance",
+  "description": "An institutional capital marketplace for undercollateralized crypto loans.",
+  "category": "Lending",
+  "tags": [
+    "defi",
+    "lending",
+    "institutional",
+    "credit"
+  ],
+  "createdAt": "2021-05-14T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

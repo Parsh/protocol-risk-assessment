@@ -1,0 +1,21 @@
+{
+  "id": "protocol-3",
+  "name": "Curve Finance",
+  "contractAddresses": [
+    "0xD533a949740bb3306d119CC777fa900bA034cd52"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "CRV",
+  "website": "https://curve.fi",
+  "documentation": "https://docs.curve.fi",
+  "description": "A DEX optimized for stablecoin and pegged asset swaps with low slippage and high capital efficiency.",
+  "category": "DEX",
+  "tags": [
+    "defi",
+    "stablecoins",
+    "liquidity",
+    "yield"
+  ],
+  "createdAt": "2020-01-13T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

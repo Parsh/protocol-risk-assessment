@@ -1,0 +1,21 @@
+{
+  "id": "protocol-19",
+  "name": "Lido",
+  "contractAddresses": [
+    "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "LDO",
+  "website": "https://lido.fi",
+  "documentation": "https://docs.lido.fi",
+  "description": "A liquid staking protocol for ETH and other PoS assets, allowing users to earn staking rewards without locking assets.",
+  "category": "Staking",
+  "tags": [
+    "defi",
+    "staking",
+    "liquid-staking",
+    "ethereum"
+  ],
+  "createdAt": "2020-12-19T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "protocol-12",
+  "name": "dYdX",
+  "contractAddresses": [
+    "0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "DYDX",
+  "website": "https://dydx.exchange",
+  "documentation": "https://docs.dydx.exchange",
+  "description": "A decentralized derivatives and perpetuals trading platform.",
+  "category": "Derivatives",
+  "tags": [
+    "defi",
+    "derivatives",
+    "perpetuals",
+    "trading"
+  ],
+  "createdAt": "2019-09-09T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

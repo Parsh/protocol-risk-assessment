@@ -1,0 +1,21 @@
+{
+  "id": "protocol-6",
+  "name": "Synthetix",
+  "contractAddresses": [
+    "0xC011A72400E58ecD99Ee497CF89E3775d4bd732F"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "SNX",
+  "website": "https://synthetix.io",
+  "documentation": "https://docs.synthetix.io",
+  "description": "A derivatives liquidity protocol for trading synthetic assets representing real-world and crypto assets.",
+  "category": "Derivatives",
+  "tags": [
+    "defi",
+    "synthetics",
+    "derivatives",
+    "trading"
+  ],
+  "createdAt": "2018-09-11T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

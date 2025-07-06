@@ -1,0 +1,21 @@
+{
+  "id": "protocol-20",
+  "name": "Rocket Pool",
+  "contractAddresses": [
+    "0xae78736Cd615f374D3085123A210448E74Fc6393"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "RPL",
+  "website": "https://rocketpool.net",
+  "documentation": "https://docs.rocketpool.net",
+  "description": "A decentralized Ethereum liquid staking protocol allowing users to stake ETH and run nodes.",
+  "category": "Staking",
+  "tags": [
+    "defi",
+    "staking",
+    "liquid-staking",
+    "ethereum"
+  ],
+  "createdAt": "2021-10-06T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "protocol-14",
+  "name": "Venus Protocol",
+  "contractAddresses": [
+    "0xBf7A7169562078c96f0eC1A8aFD6aE50f12e5A99"
+  ],
+  "blockchain": "binance-smart-chain",
+  "tokenSymbol": "XVS",
+  "website": "https://venus.io",
+  "documentation": "https://docs.venus.io",
+  "description": "A money market and synthetic stablecoin protocol on BNB Chain.",
+  "category": "Lending",
+  "tags": [
+    "defi",
+    "lending",
+    "borrowing",
+    "bnb-chain"
+  ],
+  "createdAt": "2020-11-14T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

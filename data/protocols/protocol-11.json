@@ -1,0 +1,20 @@
+{
+  "id": "protocol-11",
+  "name": "1inch",
+  "contractAddresses": [
+    "0x1111111254EEB25477B68fb85Ed929f73A960582"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "1INCH",
+  "website": "https://1inch.io",
+  "documentation": "https://docs.1inch.io",
+  "description": "A DEX aggregator that finds the best prices across multiple decentralized exchanges.",
+  "category": "Aggregator",
+  "tags": [
+    "defi",
+    "dex-aggregator",
+    "trading"
+  ],
+  "createdAt": "2020-08-07T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "protocol-16",
+  "name": "Raydium",
+  "contractAddresses": [
+    "So11111111111111111111111111111111111111112"
+  ],
+  "blockchain": "solana",
+  "tokenSymbol": "RAY",
+  "website": "https://raydium.io",
+  "documentation": "https://docs.raydium.io",
+  "description": "A Solana-based AMM and liquidity provider for the Serum DEX.",
+  "category": "DEX",
+  "tags": [
+    "defi",
+    "solana",
+    "amm",
+    "liquidity"
+  ],
+  "createdAt": "2021-02-21T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}
