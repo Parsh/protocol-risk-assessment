@@ -21,6 +21,7 @@ import {
 import { AssessmentRepository, ProtocolRepository } from '../repositories/index';
 import { logger } from '../config/logger';
 import { RiskScoringEngine, ScoringInput } from './risk-scoring-engine';
+import { UnifiedBlockchainClient, createUnifiedBlockchainClient } from './unified-blockchain-client';
 
 export interface AssessmentRequest {
   protocolId?: string;
@@ -64,12 +65,25 @@ export class AssessmentOrchestrator {
   private protocolRepo: ProtocolRepository;
   private assessmentRepo: AssessmentRepository;
   private riskScoringEngine: RiskScoringEngine;
+  private blockchainClient: UnifiedBlockchainClient;
   private activeAssessments: Map<string, AssessmentProgress> = new Map();
 
   constructor() {
     this.protocolRepo = new ProtocolRepository();
     this.assessmentRepo = new AssessmentRepository();
     this.riskScoringEngine = new RiskScoringEngine();
+    
+    // Initialize blockchain client with default configuration
+    // In production, this would be configured with proper API keys
+    this.blockchainClient = createUnifiedBlockchainClient({
+      ethereum: { network: 'mainnet' },
+      bsc: { network: 'mainnet' },
+      polygon: { network: 'mainnet' },
+      rateLimit: {
+        requestsPerSecond: 3, // Conservative rate limiting
+        burstSize: 5
+      }
+    });
   }
 
   /**

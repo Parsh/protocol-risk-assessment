@@ -191,6 +191,12 @@ describe('Repository Layer - Unit Tests', () => {
       let testProtocols: Protocol[];
 
       beforeEach(async () => {
+        // Clear any existing data first
+        const existing = await protocolRepo.findAll();
+        for (const protocol of existing) {
+          await protocolRepo.delete(protocol.id);
+        }
+
         testProtocols = [
           MockDataFactory.createProtocol({ blockchain: 'ethereum', name: 'Ethereum Protocol' }),
           MockDataFactory.createProtocol({ blockchain: 'ethereum', name: 'Another Ethereum Protocol' }),
@@ -325,6 +331,12 @@ describe('Repository Layer - Unit Tests', () => {
 
     describe('Statistics and Aggregation', () => {
       beforeEach(async () => {
+        // Clear any existing assessments first
+        const existing = await assessmentRepo.findAll();
+        for (const assessment of existing) {
+          await assessmentRepo.delete(assessment.id);
+        }
+
         const assessments = [
           MockDataFactory.createRiskAssessment('protocol-1', { overallScore: 80, id: 'stats-assessment-1' }),
           MockDataFactory.createRiskAssessment('protocol-1', { overallScore: 90, id: 'stats-assessment-2' }),
