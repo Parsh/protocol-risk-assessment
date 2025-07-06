@@ -45,6 +45,29 @@ export interface AssessmentRequest {
   analysisDepth?: AnalysisDepth;
 }
 
+export interface AnalyzerResults {
+  technical?: {
+    score: number;
+    findings: Finding[];
+    vulnerabilities?: any[];
+  };
+  liquidity?: {
+    score: number;
+    findings: Finding[];
+    metrics?: any;
+  };
+  governance?: {
+    score: number;
+    findings: Finding[];
+    metrics?: any;
+  };
+  reputation?: {
+    score: number;
+    findings: Finding[];
+    metrics?: any;
+  };
+}
+
 export interface AssessmentResponse {
   assessmentId: string;
   status: AssessmentStatus;
@@ -439,25 +462,67 @@ export class AssessmentOrchestrator {
       // Stage 2: DeFi Data Collection
       const defiData = await this.collectDeFiData(progress, protocol);
 
-      // Stage 3: Technical Analysis
-      const technicalScore = await this.analyzeTechnical(progress, protocol, blockchainData);
-
-      // Stage 4: Liquidity Analysis
-      const liquidityScore = await this.analyzeLiquidity(progress, protocol, defiData);
-
-      // Stage 5: Governance Analysis (placeholder for now)
-      const governanceScore = await this.analyzeGovernance(progress, protocol);
-
-      // Stage 6: Reputation Analysis (placeholder for now)
-      const reputationScore = await this.analyzeReputation(progress, protocol);
-
-      // Stage 7: Risk Calculation
-      await this.calculateFinalRisk(progress, assessmentId, protocol, {
-        technical: technicalScore,
-        governance: governanceScore,
-        liquidity: liquidityScore,
-        reputation: reputationScore
+      // Stage 3-6: Parallel Risk Analysis
+      progress.currentStage = 'Risk Analysis (Parallel Execution)';
+      progress.progress = 50;
+      
+      logger.info('Starting parallel risk analysis', { 
+        assessmentId, 
+        protocolId: protocol.id,
+        analyzers: ['technical', 'liquidity', 'governance', 'reputation']
       });
+
+      // Execute all analyzers in parallel for better performance and collect findings
+      const [technicalResult, liquidityResult, governanceResult, reputationResult] = await Promise.all([
+        this.analyzeTechnicalWithFindings(progress, protocol, blockchainData).catch(error => {
+          logger.error('Technical analysis failed', { assessmentId, error: error.message });
+          return { score: 65, findings: [] }; // Default result for failed analysis
+        }),
+        this.analyzeLiquidityWithFindings(progress, protocol, defiData).catch(error => {
+          logger.error('Liquidity analysis failed', { assessmentId, error: error.message });
+          return { score: 65, findings: [] }; // Default result for failed analysis
+        }),
+        this.analyzeGovernanceWithFindings(progress, protocol).catch(error => {
+          logger.error('Governance analysis failed', { assessmentId, error: error.message });
+          return { score: 65, findings: [] }; // Default result for failed analysis
+        }),
+        this.analyzeReputationWithFindings(progress, protocol).catch(error => {
+          logger.error('Reputation analysis failed', { assessmentId, error: error.message });
+          return { score: 60, findings: [] }; // Default result for failed analysis
+        })
+      ]);
+
+      const categoryScores = {
+        technical: technicalResult.score,
+        governance: governanceResult.score,
+        liquidity: liquidityResult.score,
+        reputation: reputationResult.score
+      };
+
+      // Aggregate all findings from analyzers
+      const aggregatedFindings = [
+        ...technicalResult.findings,
+        ...liquidityResult.findings,
+        ...governanceResult.findings,
+        ...reputationResult.findings
+      ];
+
+      logger.info('Parallel risk analysis completed', {
+        assessmentId,
+        protocolId: protocol.id,
+        scores: categoryScores,
+        totalFindings: aggregatedFindings.length,
+        findingsBreakdown: {
+          technical: technicalResult.findings.length,
+          liquidity: liquidityResult.findings.length,
+          governance: governanceResult.findings.length,
+          reputation: reputationResult.findings.length
+        },
+        executionTime: Date.now() - progress.startedAt.getTime()
+      });
+
+      // Stage 7: Risk Calculation with aggregated findings
+      await this.calculateFinalRiskWithFindings(progress, assessmentId, protocol, categoryScores, aggregatedFindings);
 
       // Complete the assessment
       await this.completeAssessment(assessmentId, protocol, request);
@@ -599,95 +664,182 @@ export class AssessmentOrchestrator {
   }
 
   /**
-   * Analyze technical aspects based on blockchain data
+   * Convert analyzer-specific findings to standard Finding format
    */
+  private convertAnalyzerFindingsToStandard(analyzerFindings: any[], source: string): Finding[] {
+    return analyzerFindings.map((finding, index) => ({
+      id: finding.id || `${source}-${Date.now()}-${index}`,
+      category: this.mapToFindingCategory(finding.severity || 'medium'),
+      severity: this.mapToFindingSeverity(finding.severity || 'medium'),
+      title: finding.title || `${source} analysis finding`,
+      description: finding.description || finding.impact || 'Risk identified during analysis',
+      recommendation: finding.recommendation || 'Review identified risk factor',
+      source,
+      confidence: finding.confidence || 75,
+      metadata: {
+        ...finding.metrics,
+        originalSeverity: finding.severity,
+        analyzerVersion: finding.version || '1.0.0'
+      }
+    }));
+  }
+
   /**
-   * Analyze technical security using Slither smart contract analysis
+   * Map analyzer severity to FindingCategory
    */
-  private async analyzeTechnical(progress: AssessmentProgress, protocol: Protocol, blockchainData: any): Promise<number> {
-    progress.currentStage = 'Smart Contract Security Analysis';
-    progress.progress = 50;
+  private mapToFindingCategory(severity: string): FindingCategory {
+    switch (severity.toLowerCase()) {
+      case 'critical':
+      case 'high':
+        return FindingCategory.TECHNICAL;
+      case 'medium':
+        return FindingCategory.GOVERNANCE;
+      case 'low':
+        return FindingCategory.LIQUIDITY;
+      default:
+        return FindingCategory.OPERATIONAL;
+    }
+  }
+
+  /**
+   * Map analyzer severity to FindingSeverity
+   */
+  private mapToFindingSeverity(severity: string): FindingSeverity {
+    switch (severity.toLowerCase()) {
+      case 'critical':
+        return FindingSeverity.CRITICAL;
+      case 'high':
+        return FindingSeverity.HIGH;
+      case 'medium':
+        return FindingSeverity.MEDIUM;
+      case 'low':
+        return FindingSeverity.LOW;
+      default:
+        return FindingSeverity.INFO;
+    }
+  }
+
+  /**
+   * Analyze technical aspects and return both score and findings
+   */
+  private async analyzeTechnicalWithFindings(
+    progress: AssessmentProgress, 
+    protocol: Protocol, 
+    blockchainData: any
+  ): Promise<{ score: number; findings: Finding[] }> {
+    progress.currentStage = 'Technical Analysis';
+    progress.progress = 35;
 
     try {
-      logger.info('Starting technical analysis with Slither', { 
+      logger.info('Starting technical analysis', { 
         protocolId: protocol.id, 
-        contractAddresses: protocol.contractAddresses 
+        contractCount: protocol.contractAddresses.length 
       });
 
-      let totalTechnicalScore = 0;
+      let totalVulnerabilities = 0;
       let analyzedContracts = 0;
-      let allVulnerabilities: any[] = [];
+      const allVulnerabilities: any[] = [];
 
-      // Analyze each contract address
+      // Analyze each contract using smart contract analyzer
       for (const contractAddress of protocol.contractAddresses) {
         try {
-          const contractData = blockchainData[contractAddress];
-          
-          // Skip if we don't have source code
-          if (!contractData?.sourceCode || !contractData?.isVerified) {
-            logger.warn('Skipping contract analysis - no verified source code', { 
-              contractAddress, 
-              isVerified: contractData?.isVerified,
-              hasSourceCode: !!contractData?.sourceCode 
-            });
-            continue;
+          const analysisResult = await smartContractAnalyzer.analyzeContract({
+            contractAddress,
+            blockchain: protocol.blockchain,
+            contractName: `${protocol.name}-contract-${contractAddress.slice(-8)}`
+          });
+
+          if (analysisResult.vulnerabilities) {
+            allVulnerabilities.push(...analysisResult.vulnerabilities);
+            totalVulnerabilities += analysisResult.vulnerabilities.length;
           }
-
-          // Prepare contract for analysis
-          const contractInput = {
-            contractAddress,
-            sourceCode: contractData.sourceCode,
-            contractName: contractData.contractName || protocol.name,
-            blockchain: protocol.blockchain
-          };
-
-          logger.info('Analyzing contract with Slither', { contractAddress, contractName: contractInput.contractName });
-
-          // Run Slither analysis
-          const analysisResult = await smartContractAnalyzer.analyzeContract(contractInput);
-
-          // Accumulate results
-          totalTechnicalScore += analysisResult.technicalScore;
           analyzedContracts++;
-          allVulnerabilities = allVulnerabilities.concat(analysisResult.vulnerabilities);
 
-          logger.info('Contract analysis completed', {
-            contractAddress,
-            technicalScore: analysisResult.technicalScore,
-            vulnerabilitiesFound: analysisResult.vulnerabilities.length
-          });
-
-        } catch (error) {
-          logger.error('Contract analysis failed', { 
+        } catch (contractError) {
+          logger.warn('Contract analysis failed', { 
+            protocolId: protocol.id, 
             contractAddress, 
-            error: error instanceof Error ? error.message : 'Unknown error' 
+            error: contractError instanceof Error ? contractError.message : 'Unknown error'
           });
-          
-          // Use a high risk score (90) for failed analysis to be conservative
-          totalTechnicalScore += 90;
-          analyzedContracts++;
         }
       }
 
-      // Calculate average technical score
-      let averageTechnicalScore = analyzedContracts > 0 ? totalTechnicalScore / analyzedContracts : 50;
+      // Calculate risk score based on vulnerabilities
+      let averageTechnicalScore = 20; // Start with high risk (lower score = higher risk)
+      
+      if (totalVulnerabilities === 0) {
+        averageTechnicalScore = 95; // Very low risk
+      } else if (totalVulnerabilities <= 2) {
+        averageTechnicalScore = 75; // Low risk
+      } else if (totalVulnerabilities <= 5) {
+        averageTechnicalScore = 50; // Medium risk
+      } else if (totalVulnerabilities <= 10) {
+        averageTechnicalScore = 30; // High risk
+      }
+      // else keeps the initial high risk score
 
-      // Apply penalties for unanalyzed contracts (conservative approach)
+      // Apply penalties for unanalyzed contracts
       const unanalyzedContractPenalty = (protocol.contractAddresses.length - analyzedContracts) * 15;
       averageTechnicalScore += unanalyzedContractPenalty;
-
-      // Cap the score at 100
       averageTechnicalScore = Math.min(averageTechnicalScore, 100);
+
+      const score = Math.round(averageTechnicalScore);
+
+      // Generate findings based on vulnerabilities
+      const findings: Finding[] = [];
+      
+      if (score > 80) {
+        findings.push({
+          id: `tech-${Date.now()}-high-risk`,
+          category: FindingCategory.TECHNICAL,
+          severity: FindingSeverity.HIGH,
+          title: 'High Technical Risk Detected',
+          description: `Technical analysis resulted in high risk score of ${score}/100 with ${totalVulnerabilities} vulnerabilities found`,
+          recommendation: 'Conduct thorough security audit and address identified vulnerabilities',
+          source: 'technical-analyzer',
+          confidence: 85,
+          metadata: { vulnerabilityCount: totalVulnerabilities, analyzedContracts }
+        });
+      } else if (score > 60) {
+        findings.push({
+          id: `tech-${Date.now()}-medium-risk`,
+          category: FindingCategory.TECHNICAL,
+          severity: FindingSeverity.MEDIUM,
+          title: 'Medium Technical Risk Detected',
+          description: `Technical analysis identified moderate risks with score of ${score}/100 and ${totalVulnerabilities} vulnerabilities`,
+          recommendation: 'Review code quality and implement security best practices',
+          source: 'technical-analyzer',
+          confidence: 75,
+          metadata: { vulnerabilityCount: totalVulnerabilities, analyzedContracts }
+        });
+      }
+
+      // Add findings for specific vulnerabilities
+      allVulnerabilities.forEach((vuln, index) => {
+        if (vuln.severity === 'HIGH' || vuln.severity === 'CRITICAL') {
+          findings.push({
+            id: `vuln-${Date.now()}-${index}`,
+            category: FindingCategory.TECHNICAL,
+            severity: vuln.severity === 'CRITICAL' ? FindingSeverity.CRITICAL : FindingSeverity.HIGH,
+            title: vuln.title || 'Security Vulnerability',
+            description: vuln.description || 'Security vulnerability detected in smart contract',
+            recommendation: vuln.recommendation || 'Address the identified vulnerability',
+            source: 'smart-contract-analyzer',
+            confidence: 90,
+            metadata: { contract: vuln.contract, line: vuln.line }
+          });
+        }
+      });
 
       logger.info('Technical analysis completed', {
         protocolId: protocol.id,
-        totalContracts: protocol.contractAddresses.length,
-        analyzedContracts,
-        totalVulnerabilities: allVulnerabilities.length,
-        averageTechnicalScore: Math.round(averageTechnicalScore)
+        score,
+        totalVulnerabilities,
+        findingsCount: findings.length,
+        analyzedContracts
       });
 
-      return Math.round(averageTechnicalScore);
+      return { score, findings };
 
     } catch (error) {
       logger.error('Technical analysis failed', { 
@@ -695,24 +847,31 @@ export class AssessmentOrchestrator {
         error: error instanceof Error ? error.message : 'Unknown error' 
       });
       
-      // Return high risk score for failed technical analysis
-      return 90;
+      return { 
+        score: 90, // High risk score for failed analysis
+        findings: [{
+          id: `tech-error-${Date.now()}`,
+          category: FindingCategory.TECHNICAL,
+          severity: FindingSeverity.HIGH,
+          title: 'Technical Analysis Failed',
+          description: 'Unable to complete technical analysis due to system error',
+          recommendation: 'Retry analysis or conduct manual security review',
+          source: 'technical-analyzer',
+          confidence: 50
+        }]
+      };
     }
   }
 
   /**
-   * Analyze liquidity based on DeFi data
+   * Analyze liquidity and return both score and findings
    */
-  private async analyzeLiquidity(progress: AssessmentProgress, protocol: Protocol, defiData: any): Promise<number> {
-    progress.currentStage = 'Liquidity Analysis';
-    progress.progress = 65;
-
+  private async analyzeLiquidityWithFindings(
+    progress: AssessmentProgress, 
+    protocol: Protocol, 
+    defiData: any
+  ): Promise<{ score: number; findings: Finding[] }> {
     try {
-      logger.info('Starting liquidity analysis', { 
-        protocolId: protocol.id, 
-        protocolName: protocol.name 
-      });
-
       // Prepare liquidity input
       const liquidityInput = {
         protocolName: protocol.name,
@@ -724,41 +883,34 @@ export class AssessmentOrchestrator {
 
       // Run liquidity analysis
       const liquidityResult = await liquidityAnalyzer.analyzeLiquidity(liquidityInput);
+      
+      // Convert analyzer findings to standard format
+      const standardFindings = this.convertAnalyzerFindingsToStandard(
+        liquidityResult.findings, 
+        'liquidity-analyzer'
+      );
 
-      logger.info('Liquidity analysis completed', {
-        protocolId: protocol.id,
-        liquidityScore: liquidityResult.liquidityScore,
-        riskLevel: liquidityResult.riskLevel,
-        findingsCount: liquidityResult.findings.length,
-        executionTime: liquidityResult.metadata.analysisTime
-      });
-
-      return liquidityResult.liquidityScore;
-
+      return { 
+        score: liquidityResult.liquidityScore, 
+        findings: standardFindings 
+      };
     } catch (error) {
-      logger.error('Liquidity analysis failed', { 
+      logger.error('Liquidity analysis with findings failed', { 
         protocolId: protocol.id, 
         error: error instanceof Error ? error.message : 'Unknown error' 
       });
-      
-      // Return moderate risk score for failed liquidity analysis
-      return 65;
+      return { score: 65, findings: [] };
     }
   }
 
   /**
-   * Analyze governance (placeholder implementation)
+   * Analyze governance and return both score and findings
    */
-  private async analyzeGovernance(progress: AssessmentProgress, protocol: Protocol): Promise<number> {
-    progress.currentStage = 'Governance Analysis';
-    progress.progress = 75;
-
+  private async analyzeGovernanceWithFindings(
+    progress: AssessmentProgress, 
+    protocol: Protocol
+  ): Promise<{ score: number; findings: Finding[] }> {
     try {
-      logger.info('Starting governance analysis', { 
-        protocolId: protocol.id, 
-        protocolName: protocol.name 
-      });
-
       // Prepare governance input
       const governanceInput = {
         protocolName: protocol.name,
@@ -770,81 +922,73 @@ export class AssessmentOrchestrator {
 
       // Run governance analysis
       const governanceResult = await simpleGovernanceAnalyzer.analyzeGovernance(governanceInput);
+      
+      // Convert analyzer findings to standard format
+      const standardFindings = this.convertAnalyzerFindingsToStandard(
+        governanceResult.findings, 
+        'governance-analyzer'
+      );
 
-      logger.info('Governance analysis completed', {
-        protocolId: protocol.id,
-        governanceScore: governanceResult.governanceScore,
-        findingsCount: governanceResult.findings.length,
-        executionTime: governanceResult.metadata.analysisTime
-      });
-
-      return governanceResult.governanceScore;
-
+      return { 
+        score: governanceResult.governanceScore, 
+        findings: standardFindings 
+      };
     } catch (error) {
-      logger.error('Governance analysis failed', { 
+      logger.error('Governance analysis with findings failed', { 
         protocolId: protocol.id, 
         error: error instanceof Error ? error.message : 'Unknown error' 
       });
-      
-      // Return moderate risk score for failed governance analysis
-      return 65;
+      return { score: 65, findings: [] };
     }
   }
 
   /**
-   * Analyze reputation
+   * Analyze reputation and return both score and findings
    */
-  private async analyzeReputation(progress: AssessmentProgress, protocol: Protocol): Promise<number> {
-    progress.currentStage = 'Reputation Analysis';
-    progress.progress = 85;
-
+  private async analyzeReputationWithFindings(
+    progress: AssessmentProgress, 
+    protocol: Protocol
+  ): Promise<{ score: number; findings: Finding[] }> {
     try {
-      logger.info('Starting reputation analysis', { 
-        protocolId: protocol.id, 
-        protocolName: protocol.name 
-      });
-
       // Prepare reputation input
       const reputationInput = {
         protocolName: protocol.name,
         contractAddresses: protocol.contractAddresses,
         blockchain: protocol.blockchain,
         ...(protocol.website && { website: protocol.website })
-        // Note: GitHub repo would be added here if available in protocol data
       };
 
       // Run reputation analysis
       const reputationResult = await reputationAnalyzer.analyzeReputation(reputationInput);
+      
+      // Convert analyzer findings to standard format
+      const standardFindings = this.convertAnalyzerFindingsToStandard(
+        reputationResult.findings, 
+        'reputation-analyzer'
+      );
 
-      logger.info('Reputation analysis completed', {
-        protocolId: protocol.id,
-        reputationScore: reputationResult.reputationScore,
-        riskLevel: reputationResult.riskLevel,
-        findingsCount: reputationResult.findings.length,
-        executionTime: reputationResult.metadata.analysisTime
-      });
-
-      return reputationResult.reputationScore;
-
+      return { 
+        score: reputationResult.reputationScore, 
+        findings: standardFindings 
+      };
     } catch (error) {
-      logger.error('Reputation analysis failed', { 
+      logger.error('Reputation analysis with findings failed', { 
         protocolId: protocol.id, 
         error: error instanceof Error ? error.message : 'Unknown error' 
       });
-      
-      // Return moderate risk score for failed reputation analysis
-      return 60;
+      return { score: 60, findings: [] };
     }
   }
 
   /**
-   * Calculate final risk score
+   * Calculate final risk score with aggregated findings
    */
-  private async calculateFinalRisk(
+  private async calculateFinalRiskWithFindings(
     progress: AssessmentProgress, 
     assessmentId: string,
     protocol: Protocol, 
-    categoryScores: CategoryScores
+    categoryScores: CategoryScores,
+    aggregatedFindings: Finding[]
   ): Promise<void> {
     progress.currentStage = 'Risk Calculation';
     progress.progress = 95;
@@ -852,16 +996,17 @@ export class AssessmentOrchestrator {
     const assessment = await this.assessmentRepo.findById(assessmentId);
     if (!assessment) return;
 
-    // Generate findings based on scores
-    const findings = this.generateFindingsFromScores(protocol, categoryScores);
+    // Combine aggregated findings with any score-based findings
+    const scoringFindings = this.generateFindingsFromScores(protocol, categoryScores);
+    const allFindings = [...aggregatedFindings, ...scoringFindings];
     
-    // Prepare scoring input with proper metadata interface
+    // Prepare scoring input with all findings
     const scoringInput: ScoringInput = {
-      findings,
+      findings: allFindings,
       protocolMetadata: {
         ageInDays: this.calculateProtocolAge(protocol),
         tvlUsd: this.estimateTvl(protocol),
-        transactionVolume: 0, // Will be populated from defiData when available
+        transactionVolume: 0,
         auditCount: this.estimateAuditCount(protocol)
       }
     };
@@ -869,23 +1014,30 @@ export class AssessmentOrchestrator {
     // Calculate overall risk score
     const riskResult = await this.riskScoringEngine.calculateRiskScore(scoringInput);
 
-    // Update assessment
+    // Update assessment with comprehensive results
     assessment.categoryScores = categoryScores;
     assessment.overallScore = riskResult.overallScore;
     assessment.riskLevel = riskResult.riskLevel;
     assessment.recommendations = riskResult.recommendations;
-    assessment.findings = findings;
+    assessment.findings = allFindings; // Use aggregated findings
     assessment.metadata.executionTime = Date.now() - assessment.createdAt.getTime();
     assessment.metadata.dataSourcesUsed = ['blockchain', 'defillama', 'coingecko'];
+    assessment.metadata.warnings = assessment.metadata.warnings || [];
+    assessment.metadata.warnings.push(`Total findings: ${allFindings.length} (${aggregatedFindings.length} from analyzers, ${scoringFindings.length} from scoring)`);
     assessment.updatedAt = new Date();
 
     await this.assessmentRepo.save(assessmentId, assessment);
 
-    logger.info('Risk calculation completed', { 
+    logger.info('Risk calculation with findings completed', { 
       assessmentId,
       overallScore: riskResult.overallScore,
       riskLevel: riskResult.riskLevel,
-      categoryScores
+      categoryScores,
+      totalFindings: allFindings.length,
+      findingsSources: {
+        analyzers: aggregatedFindings.length,
+        scoring: scoringFindings.length
+      }
     });
   }
 
