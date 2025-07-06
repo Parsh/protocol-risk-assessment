@@ -6,7 +6,11 @@
 // Smart Contract Analyzer (Slither-based)
 export * from './smart-contract';
 
-// Future analyzers will be exported here:
-// export * from './governance';
-// export * from './liquidity';
-// export * from './reputation';
+// Governance Analyzer
+export * from './governance';
+
+// Liquidity Analyzer
+export * from './liquidity';
+
+// Developer Reputation Analyzer
+export * from './reputation';

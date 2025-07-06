@@ -25,6 +25,9 @@ import { RiskScoringEngine, ScoringInput } from './risk-scoring-engine';
 import { UnifiedBlockchainClient, createUnifiedBlockchainClient } from './unified-blockchain-client';
 import { UnifiedDeFiDataClient } from './unified-defi-data-client';
 import { smartContractAnalyzer } from '../analyzers/smart-contract';
+import { simpleGovernanceAnalyzer } from '../analyzers/governance';
+import { liquidityAnalyzer } from '../analyzers/liquidity';
+import { reputationAnalyzer } from '../analyzers/reputation';
 
 export interface AssessmentRequest {
   protocolId?: string;
@@ -704,40 +707,43 @@ export class AssessmentOrchestrator {
     progress.currentStage = 'Liquidity Analysis';
     progress.progress = 65;
 
-    let score = 50; // Base score
-
-    // Check TVL if available
-    const protocolData = defiData.protocolInfo || defiData.protocolByAddress;
-    if (protocolData?.tvl) {
-      const tvl = protocolData.tvl;
-      if (tvl > 1000000) score += 15; // $1M+ TVL
-      if (tvl > 10000000) score += 10; // $10M+ TVL
-      if (tvl > 100000000) score += 10; // $100M+ TVL
-      if (tvl > 1000000000) score += 10; // $1B+ TVL
-
-      logger.info('TVL analysis completed', { 
-        assessmentId: progress.assessmentId,
-        tvl,
-        scoreBonus: Math.min(45, tvl > 1000000000 ? 45 : tvl > 100000000 ? 35 : tvl > 10000000 ? 25 : tvl > 1000000 ? 15 : 0)
+    try {
+      logger.info('Starting liquidity analysis', { 
+        protocolId: protocol.id, 
+        protocolName: protocol.name 
       });
-    }
 
-    // Check protocol category risk
-    if (protocolData?.category) {
-      // Lower risk categories get higher scores
-      const categoryBonus: { [key: string]: number } = {
-        'Lending': 10,
-        'DEX': 8,
-        'Yield': 5,
-        'Derivatives': -5,
-        'Synthetics': -10,
-        'Liquid Staking': 7,
-        'Bridge': -3
+      // Prepare liquidity input
+      const liquidityInput = {
+        protocolName: protocol.name,
+        contractAddresses: protocol.contractAddresses,
+        blockchain: protocol.blockchain,
+        ...(protocol.tokenSymbol && { tokenSymbol: protocol.tokenSymbol }),
+        ...(defiData && { defiData })
       };
-      score += categoryBonus[protocolData.category] || 0;
-    }
 
-    return Math.min(Math.max(score, 0), 100);
+      // Run liquidity analysis
+      const liquidityResult = await liquidityAnalyzer.analyzeLiquidity(liquidityInput);
+
+      logger.info('Liquidity analysis completed', {
+        protocolId: protocol.id,
+        liquidityScore: liquidityResult.liquidityScore,
+        riskLevel: liquidityResult.riskLevel,
+        findingsCount: liquidityResult.findings.length,
+        executionTime: liquidityResult.metadata.analysisTime
+      });
+
+      return liquidityResult.liquidityScore;
+
+    } catch (error) {
+      logger.error('Liquidity analysis failed', { 
+        protocolId: protocol.id, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      
+      // Return moderate risk score for failed liquidity analysis
+      return 65;
+    }
   }
 
   /**
@@ -747,25 +753,88 @@ export class AssessmentOrchestrator {
     progress.currentStage = 'Governance Analysis';
     progress.progress = 75;
 
-    // Placeholder: return moderate score with some randomness
-    // TODO: Implement actual governance analysis
-    const baseScore = 60;
-    const variance = Math.floor(Math.random() * 20) - 10; // ±10 points
-    return Math.min(Math.max(baseScore + variance, 0), 100);
+    try {
+      logger.info('Starting governance analysis', { 
+        protocolId: protocol.id, 
+        protocolName: protocol.name 
+      });
+
+      // Prepare governance input
+      const governanceInput = {
+        protocolName: protocol.name,
+        contractAddresses: protocol.contractAddresses,
+        blockchain: protocol.blockchain,
+        ...(protocol.tokenSymbol && { tokenSymbol: protocol.tokenSymbol }),
+        ...(protocol.contractAddresses[0] && { governanceTokenAddress: protocol.contractAddresses[0] })
+      };
+
+      // Run governance analysis
+      const governanceResult = await simpleGovernanceAnalyzer.analyzeGovernance(governanceInput);
+
+      logger.info('Governance analysis completed', {
+        protocolId: protocol.id,
+        governanceScore: governanceResult.governanceScore,
+        findingsCount: governanceResult.findings.length,
+        executionTime: governanceResult.metadata.analysisTime
+      });
+
+      return governanceResult.governanceScore;
+
+    } catch (error) {
+      logger.error('Governance analysis failed', { 
+        protocolId: protocol.id, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      
+      // Return moderate risk score for failed governance analysis
+      return 65;
+    }
   }
 
   /**
-   * Analyze reputation (placeholder implementation)
+   * Analyze reputation
    */
   private async analyzeReputation(progress: AssessmentProgress, protocol: Protocol): Promise<number> {
     progress.currentStage = 'Reputation Analysis';
     progress.progress = 85;
 
-    // Placeholder: return moderate score with some randomness
-    // TODO: Implement actual reputation analysis
-    const baseScore = 55;
-    const variance = Math.floor(Math.random() * 20) - 10; // ±10 points
-    return Math.min(Math.max(baseScore + variance, 0), 100);
+    try {
+      logger.info('Starting reputation analysis', { 
+        protocolId: protocol.id, 
+        protocolName: protocol.name 
+      });
+
+      // Prepare reputation input
+      const reputationInput = {
+        protocolName: protocol.name,
+        contractAddresses: protocol.contractAddresses,
+        blockchain: protocol.blockchain,
+        ...(protocol.website && { website: protocol.website })
+        // Note: GitHub repo would be added here if available in protocol data
+      };
+
+      // Run reputation analysis
+      const reputationResult = await reputationAnalyzer.analyzeReputation(reputationInput);
+
+      logger.info('Reputation analysis completed', {
+        protocolId: protocol.id,
+        reputationScore: reputationResult.reputationScore,
+        riskLevel: reputationResult.riskLevel,
+        findingsCount: reputationResult.findings.length,
+        executionTime: reputationResult.metadata.analysisTime
+      });
+
+      return reputationResult.reputationScore;
+
+    } catch (error) {
+      logger.error('Reputation analysis failed', { 
+        protocolId: protocol.id, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      
+      // Return moderate risk score for failed reputation analysis
+      return 60;
+    }
   }
 
   /**

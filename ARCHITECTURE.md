@@ -958,6 +958,7 @@ data/
 ---
 
 ### Phase 6: Multi-Dimensional Risk Analyzers (Week 7-8)
+- Note: You can mock the data if the API keys aren't available(as a fallback)
 #### Stage 6.1: Governance Analyzer (Days 67-70)
 **Governance Risk Assessment**
 - [ ] Create GovernanceAnalyzer class
