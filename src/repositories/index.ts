@@ -1,7 +1,7 @@
 import { JsonFileRepository } from './json-file-repository';
-import { Protocol, RiskAssessment } from '../models';
+import { Protocol, RiskAssessment } from '../models/index';
 import { config } from '../config/environment';
-import { logger } from '../middleware/logging';
+import { logger } from '../config/logger';
 
 /**
  * Repository factory for creating typed repositories

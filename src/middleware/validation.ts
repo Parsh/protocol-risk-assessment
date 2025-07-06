@@ -62,6 +62,14 @@ export const validate = (schema: ValidationSchema) => {
   };
 };
 
+/**
+ * Simple validation middleware for request body only
+ * @param schema - Joi validation schema for request body
+ */
+export const validateRequest = (schema: Joi.ObjectSchema) => {
+  return validate({ body: schema });
+};
+
 // Common validation schemas
 export const commonSchemas = {
   // Ethereum address validation

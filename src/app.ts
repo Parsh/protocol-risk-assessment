@@ -6,6 +6,7 @@ import { requestLogger } from './middleware/logging';
 import { errorHandler } from './middleware/error-handler';
 import { notFoundHandler } from './middleware/not-found';
 import { healthRouter } from './routes/health';
+import protocolRouter from './routes/protocols';
 
 export function createApp(): express.Application {
   const app = express();
@@ -44,6 +45,12 @@ export function createApp(): express.Application {
 
   // API routes
   app.use('/api/v1', healthRouter);
+  console.log('🔌 Health routes mounted at /api/v1');
+  
+  console.log('🔍 Protocol router type:', typeof protocolRouter);
+  console.log('🔍 Protocol router stack length:', protocolRouter?.stack?.length || 'unknown');
+  app.use('/api/v1/protocols', protocolRouter);
+  console.log('🔌 Protocol routes mounted at /api/v1/protocols');
 
   // 404 handler for undefined routes
   app.use(notFoundHandler);
