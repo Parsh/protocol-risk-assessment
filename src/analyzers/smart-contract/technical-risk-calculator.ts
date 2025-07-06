@@ -49,28 +49,10 @@ export class TechnicalRiskCalculator {
     let maxPossibleScore = 0;
     const vulnerabilityScores: VulnerabilityScore[] = [];
 
-    logger.debug('Starting technical score calculation', {
-      vulnerabilityCount: vulnerabilities.length,
-      firstVulnerability: vulnerabilities[0] ? {
-        detector: vulnerabilities[0].detector,
-        severity: vulnerabilities[0].severity,
-        confidence: vulnerabilities[0].confidence
-      } : null
-    });
-
     for (const vulnerability of vulnerabilities) {
       const baseScore = this.SEVERITY_WEIGHTS[vulnerability.severity];
       const confidenceMultiplier = this.CONFIDENCE_MULTIPLIERS[vulnerability.confidence];
       const weightedScore = baseScore * confidenceMultiplier;
-
-      logger.debug('Processing vulnerability', {
-        detector: vulnerability.detector,
-        severity: vulnerability.severity,
-        confidence: vulnerability.confidence,
-        baseScore,
-        confidenceMultiplier,
-        weightedScore
-      });
 
       vulnerabilityScores.push({
         severity: vulnerability.severity,
