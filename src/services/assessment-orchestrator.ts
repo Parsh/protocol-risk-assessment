@@ -20,6 +20,7 @@ import {
 } from '../models/index';
 import { AssessmentRepository, ProtocolRepository } from '../repositories/index';
 import { logger } from '../config/logger';
+import { RiskScoringEngine, ScoringInput } from './risk-scoring-engine';
 
 export interface AssessmentRequest {
   protocolId?: string;
@@ -62,11 +63,13 @@ export interface AssessmentProgress {
 export class AssessmentOrchestrator {
   private protocolRepo: ProtocolRepository;
   private assessmentRepo: AssessmentRepository;
+  private riskScoringEngine: RiskScoringEngine;
   private activeAssessments: Map<string, AssessmentProgress> = new Map();
 
   constructor() {
     this.protocolRepo = new ProtocolRepository();
     this.assessmentRepo = new AssessmentRepository();
+    this.riskScoringEngine = new RiskScoringEngine();
   }
 
   /**
@@ -464,50 +467,88 @@ export class AssessmentOrchestrator {
     
     if (!progress || !assessment) return;
 
-    // Generate mock results (TODO: Replace with actual analysis results)
-    const categoryScores: CategoryScores = {
-      technical: Math.floor(Math.random() * 40) + 60, // 60-100
-      governance: Math.floor(Math.random() * 40) + 50, // 50-90
-      liquidity: Math.floor(Math.random() * 30) + 40, // 40-70
-      reputation: Math.floor(Math.random() * 35) + 45  // 45-80
-    };
+    try {
+      // Generate mock findings (TODO: Replace with actual analyzer results)
+      const mockCategoryScores: CategoryScores = {
+        technical: Math.floor(Math.random() * 40) + 60,
+        governance: Math.floor(Math.random() * 40) + 50,
+        liquidity: Math.floor(Math.random() * 30) + 40,
+        reputation: Math.floor(Math.random() * 35) + 45
+      };
+      const mockFindings = this.generateMockFindings(protocol, mockCategoryScores);
+      
+      // Prepare scoring input with protocol metadata
+      const scoringInput: ScoringInput = {
+        findings: mockFindings,
+        protocolMetadata: {
+          ageInDays: this.calculateProtocolAge(protocol),
+          tvlUsd: this.estimateTvl(protocol),
+          auditCount: this.estimateAuditCount(protocol)
+        }
+      };
 
-    const overallScore = Math.round(
-      (categoryScores.technical * 0.4) +
-      (categoryScores.governance * 0.25) +
-      (categoryScores.liquidity * 0.2) +
-      (categoryScores.reputation * 0.15)
-    );
+      // Use RiskScoringEngine for comprehensive scoring
+      const scoringResult = await this.riskScoringEngine.calculateRiskScore(scoringInput);
 
-    const riskLevel = this.calculateRiskLevel(overallScore);
+      // Update assessment with scoring results
+      assessment.status = AssessmentStatus.COMPLETED;
+      assessment.overallScore = scoringResult.overallScore;
+      assessment.riskLevel = scoringResult.riskLevel;
+      assessment.categoryScores = scoringResult.categoryScores;
+      assessment.findings = scoringResult.criticalFindings.concat(mockFindings);
+      assessment.recommendations = scoringResult.recommendations;
+      assessment.completedAt = new Date();
+      assessment.updatedAt = new Date();
 
-    // Update assessment with results
-    assessment.status = AssessmentStatus.COMPLETED;
-    assessment.overallScore = overallScore;
-    assessment.riskLevel = riskLevel;
-    assessment.categoryScores = categoryScores;
-    assessment.findings = this.generateMockFindings(protocol, categoryScores);
-    assessment.recommendations = this.generateMockRecommendations(categoryScores);
-    assessment.completedAt = new Date();
-    assessment.updatedAt = new Date();
+      // Add scoring confidence to metadata
+      assessment.metadata.warnings = assessment.metadata.warnings || [];
+      assessment.metadata.warnings.push(
+        `Scoring confidence: ${scoringResult.scoringBreakdown.confidence}%`
+      );
 
-    await this.assessmentRepo.save(assessmentId, assessment);
+      await this.assessmentRepo.save(assessmentId, assessment);
 
-    // Update progress
-    progress.status = AssessmentStatus.COMPLETED;
-    progress.progress = 100;
-    progress.currentStage = 'Completed';
-    progress.completedAt = new Date();
+      // Update progress
+      progress.status = AssessmentStatus.COMPLETED;
+      progress.progress = 100;
+      progress.currentStage = 'Completed';
+      progress.completedAt = new Date();
 
-    // Remove from active assessments
-    this.activeAssessments.delete(assessmentId);
+      // Remove from active assessments
+      this.activeAssessments.delete(assessmentId);
 
-    logger.info('Assessment completed successfully', { 
-      assessmentId, 
-      protocolId: protocol.id, 
-      overallScore, 
-      riskLevel 
-    });
+      logger.info('Assessment completed successfully', { 
+        assessmentId, 
+        protocolId: protocol.id, 
+        overallScore: scoringResult.overallScore, 
+        riskLevel: scoringResult.riskLevel,
+        confidence: scoringResult.scoringBreakdown.confidence,
+        findingsCount: mockFindings.length
+      });
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error('Assessment completion failed', { 
+        assessmentId, 
+        protocolId: protocol.id, 
+        error: errorMessage 
+      });
+
+      // Mark assessment as failed
+      assessment.status = AssessmentStatus.FAILED;
+      assessment.metadata.warnings = assessment.metadata.warnings || [];
+      assessment.metadata.warnings.push(`Assessment failed: ${errorMessage}`);
+      await this.assessmentRepo.save(assessmentId, assessment);
+
+      // Update progress
+      if (progress) {
+        progress.status = AssessmentStatus.FAILED;
+        progress.currentStage = 'Failed';
+      }
+
+      // Remove from active assessments
+      this.activeAssessments.delete(assessmentId);
+    }
   }
 
   /**
@@ -628,5 +669,81 @@ export class AssessmentOrchestrator {
     this.activeAssessments.delete(assessmentId);
 
     logger.error('Assessment failed', { assessmentId, error });
+  }
+
+  /**
+   * Calculate protocol age in days (mock implementation)
+   */
+  private calculateProtocolAge(protocol: Protocol): number {
+    // Calculate based on creation date, fall back to random value for mock
+    const createdAt = protocol.createdAt || new Date();
+    const ageInMs = Date.now() - createdAt.getTime();
+    const ageInDays = Math.floor(ageInMs / (1000 * 60 * 60 * 24));
+    
+    // If age is unrealistic (too old or negative), return a mock value
+    if (ageInDays < 0 || ageInDays > 2000) {
+      return Math.floor(Math.random() * 730) + 30; // 30-760 days
+    }
+    
+    return ageInDays;
+  }
+
+  /**
+   * Estimate TVL in USD (mock implementation)
+   */
+  private estimateTvl(protocol: Protocol): number {
+    // Mock TVL based on protocol characteristics
+    const baseMultiplier = protocol.contractAddresses.length;
+    const categoryMultiplier = this.getCategoryTvlMultiplier(protocol.category);
+    
+    // Generate a realistic TVL between $100K and $500M
+    const baseTvl = Math.floor(Math.random() * 50000000) + 100000; // $100K - $50M
+    return baseTvl * baseMultiplier * categoryMultiplier;
+  }
+
+  /**
+   * Estimate audit count (mock implementation)
+   */
+  private estimateAuditCount(protocol: Protocol): number {
+    // Mock audit count based on protocol age and complexity
+    const contractCount = protocol.contractAddresses.length;
+    const ageInDays = this.calculateProtocolAge(protocol);
+    
+    // More contracts and older protocols likely have more audits
+    let auditCount = 0;
+    
+    if (ageInDays > 365) auditCount += 2; // Mature protocols
+    if (ageInDays > 180) auditCount += 1; // 6+ months old
+    if (contractCount > 5) auditCount += 1; // Complex protocols
+    if (contractCount > 10) auditCount += 1; // Very complex protocols
+    
+    // Add some randomness
+    auditCount += Math.floor(Math.random() * 3); // 0-2 additional audits
+    
+    return Math.max(0, auditCount);
+  }
+
+  /**
+   * Get TVL multiplier based on protocol category
+   */
+  private getCategoryTvlMultiplier(category?: ProtocolCategory): number {
+    switch (category) {
+      case ProtocolCategory.DEX:
+      case ProtocolCategory.LENDING:
+        return 5; // DEXs and lending protocols typically have higher TVL
+      case ProtocolCategory.YIELD_FARMING:
+      case ProtocolCategory.STABLECOIN:
+        return 3; // Moderate TVL
+      case ProtocolCategory.DERIVATIVES:
+      case ProtocolCategory.BRIDGE:
+        return 2; // Lower but significant TVL
+      case ProtocolCategory.INSURANCE:
+      case ProtocolCategory.DAO:
+        return 1.5; // Specialized protocols
+      case ProtocolCategory.NFT:
+      case ProtocolCategory.OTHER:
+      default:
+        return 1; // Base multiplier
+    }
   }
 }
