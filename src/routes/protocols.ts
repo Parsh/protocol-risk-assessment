@@ -17,9 +17,46 @@ const protocolController = new ProtocolController(protocolRepository);
 console.log('🎮 Protocol controller initialized');
 
 /**
- * @route   POST /api/v1/protocols
- * @desc    Create a new protocol
- * @access  Public (should be authenticated in production)
+ * @swagger
+ * /api/v1/protocols:
+ *   post:
+ *     tags:
+ *       - Protocols
+ *     summary: Register a new protocol
+ *     description: Register a new DeFi protocol for risk assessment
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Protocol'
+ *           example:
+ *             name: "Uniswap V3"
+ *             contractAddresses: ["0x1F98431c8aD98523631AE4a59f267346ea31F984"]
+ *             blockchain: "ethereum"
+ *             tokenSymbol: "UNI"
+ *             website: "https://uniswap.org"
+ *             documentation: "https://docs.uniswap.org"
+ *     responses:
+ *       201:
+ *         description: Protocol created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Protocol created successfully"
+ *                 data:
+ *                   $ref: '#/components/schemas/Protocol'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       500:
+ *         $ref: '#/components/responses/InternalError'
  */
 router.post('/', 
   validateRequest(ValidationSchemas.protocolInput),
@@ -27,7 +64,8 @@ router.post('/',
 );
 
 /**
- * @route   GET /api/v1/protocols/stats
+ * @swagger
+ * /api/v1/protocols/stats:
  * @desc    Get protocol statistics
  * @access  Public
  */

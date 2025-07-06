@@ -1,0 +1,173 @@
+# Docker Compose for Production Deployment
+# DeFi Protocol Risk Assessment Microservice
+
+version: '3.8'
+
+services:
+  # Main Risk Assessment API
+  risk-assessment-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: defi-risk-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - API_RATE_LIMIT=${API_RATE_LIMIT:-100}
+      - API_RATE_WINDOW=${API_RATE_WINDOW:-900000}
+      
+      # External API Keys (optional - will use mock data if not provided)
+      - ETHERSCAN_API_KEY=${ETHERSCAN_API_KEY:-}
+      - BSCSCAN_API_KEY=${BSCSCAN_API_KEY:-}
+      - POLYGONSCAN_API_KEY=${POLYGONSCAN_API_KEY:-}
+      - COINGECKO_API_KEY=${COINGECKO_API_KEY:-}
+      
+      # Analysis Configuration
+      - SLITHER_TIMEOUT=${SLITHER_TIMEOUT:-300000}
+      - PARALLEL_ANALYSIS=${PARALLEL_ANALYSIS:-true}
+      - CACHE_TTL=${CACHE_TTL:-3600000}
+      
+      # Risk Scoring Configuration
+      - TECHNICAL_WEIGHT=${TECHNICAL_WEIGHT:-0.4}
+      - GOVERNANCE_WEIGHT=${GOVERNANCE_WEIGHT:-0.25}
+      - LIQUIDITY_WEIGHT=${LIQUIDITY_WEIGHT:-0.2}
+      - REPUTATION_WEIGHT=${REPUTATION_WEIGHT:-0.15}
+      
+    volumes:
+      # Persistent data storage
+      - ./data:/app/data
+      - ./logs:/app/logs
+      # Temporary analysis workspace
+      - risk-tmp:/app/tmp
+    networks:
+      - risk-assessment-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/v1/status', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.risk-api.rule=Host(`risk-api.localhost`)"
+      - "traefik.http.routers.risk-api.entrypoints=web"
+      - "traefik.http.services.risk-api.loadbalancer.server.port=3000"
+
+  # Optional: Nginx reverse proxy for production
+  nginx:
+    image: nginx:alpine
+    container_name: defi-risk-nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/sites-available:/etc/nginx/sites-available:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - risk-assessment-api
+    networks:
+      - risk-assessment-network
+    profiles:
+      - proxy
+
+  # Optional: Log aggregation with ELK stack
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    container_name: defi-risk-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    networks:
+      - risk-assessment-network
+    profiles:
+      - monitoring
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.8.0
+    container_name: defi-risk-logstash
+    volumes:
+      - ./docker/logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logs:/app/logs:ro
+    depends_on:
+      - elasticsearch
+    networks:
+      - risk-assessment-network
+    profiles:
+      - monitoring
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    container_name: defi-risk-kibana
+    ports:
+      - "${KIBANA_PORT:-5601}:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - risk-assessment-network
+    profiles:
+      - monitoring
+
+  # Optional: Prometheus monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: defi-risk-prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - risk-assessment-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: defi-risk-grafana
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    networks:
+      - risk-assessment-network
+    profiles:
+      - monitoring
+
+networks:
+  risk-assessment-network:
+    driver: bridge
+    name: risk-assessment-network
+
+volumes:
+  risk-tmp:
+    name: risk-assessment-tmp
+  elastic-data:
+    name: elastic-data
+  prometheus-data:
+    name: prometheus-data
+  grafana-data:
+    name: grafana-data

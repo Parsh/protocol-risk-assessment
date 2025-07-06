@@ -17,7 +17,11 @@ process.env.DATA_DIR = TEST_DATA_DIR;
 
 // Silence logger during tests (unless debugging)
 if (!process.env.DEBUG_TESTS) {
-  logger.silent = true;
+  // Mock logger methods for testing
+  jest.spyOn(logger, 'info').mockImplementation(() => {});
+  jest.spyOn(logger, 'warn').mockImplementation(() => {});
+  jest.spyOn(logger, 'error').mockImplementation(() => {});
+  jest.spyOn(logger, 'debug').mockImplementation(() => {});
 }
 
 // Global setup

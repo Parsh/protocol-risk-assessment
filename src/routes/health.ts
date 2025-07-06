@@ -33,8 +33,43 @@ interface HealthCheckResponse {
 }
 
 /**
- * GET /api/v1/status
- * Health check endpoint that returns system status and basic metrics
+ * @swagger
+ * /api/v1/status:
+ *   get:
+ *     tags:
+ *       - System
+ *     summary: Health check endpoint
+ *     description: Returns system health status, uptime, memory usage, and service availability
+ *     responses:
+ *       200:
+ *         description: System health information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthStatus'
+ *             example:
+ *               status: healthy
+ *               timestamp: '2025-07-06T17:00:00.000Z'
+ *               version: '1.0.0'
+ *               uptime: 3600
+ *               environment: production
+ *               memory:
+ *                 used: 128
+ *                 total: 512
+ *                 usage: '25.0%'
+ *               system:
+ *                 platform: darwin
+ *                 arch: arm64
+ *                 nodeVersion: v20.0.0
+ *               services:
+ *                 database:
+ *                   status: healthy
+ *                   responseTime: 15
+ *                   lastCheck: '2025-07-06T17:00:00.000Z'
+ *                 slither:
+ *                   status: healthy
+ *                   responseTime: 125
+ *                   lastCheck: '2025-07-06T17:00:00.000Z'
  */
 router.get('/status', asyncHandler(async (req: Request, res: Response) => {
   const memoryUsage = process.memoryUsage();
