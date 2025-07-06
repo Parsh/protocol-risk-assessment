@@ -178,6 +178,41 @@ export class AssessmentRepository extends JsonFileRepository<RiskAssessment> {
     
     return stats;
   }
+
+  /**
+   * Get recent assessments (for test compatibility)
+   */
+  async getRecentAssessments(limit: number): Promise<RiskAssessment[]> {
+    const assessments = await this.findAll();
+    return assessments
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, limit);
+  }
+
+  /**
+   * Get assessment statistics (alias for test compatibility)
+   */
+  async getAssessmentStats() {
+    const stats = await this.getStatistics();
+    return {
+      ...stats,
+      byRiskLevel: stats.byRiskLevel
+    };
+  }
+
+  /**
+   * Get assessment count by protocol
+   */
+  async getAssessmentCountByProtocol(): Promise<Record<string, number>> {
+    const assessments = await this.findAll();
+    const counts: Record<string, number> = {};
+    
+    for (const assessment of assessments) {
+      counts[assessment.protocolId] = (counts[assessment.protocolId] || 0) + 1;
+    }
+    
+    return counts;
+  }
 }
 
 // Repository instances

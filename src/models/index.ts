@@ -370,17 +370,17 @@ export const ValidationSchemas = {
 
 export const TypeGuards = {
   isProtocol(obj: any): obj is Protocol {
-    return obj && 
+    return !!(obj && 
            typeof obj.id === 'string' &&
            typeof obj.name === 'string' &&
            Array.isArray(obj.contractAddresses) &&
            typeof obj.blockchain === 'string' &&
            obj.createdAt instanceof Date &&
-           obj.updatedAt instanceof Date;
+           obj.updatedAt instanceof Date);
   },
 
   isRiskAssessment(obj: any): obj is RiskAssessment {
-    return obj &&
+    return !!(obj &&
            typeof obj.id === 'string' &&
            typeof obj.protocolId === 'string' &&
            typeof obj.status === 'string' &&
@@ -388,7 +388,7 @@ export const TypeGuards = {
            typeof obj.riskLevel === 'string' &&
            obj.categoryScores &&
            Array.isArray(obj.recommendations) &&
-           obj.metadata;
+           obj.metadata);
   },
 
   isFinding(obj: any): obj is Finding {
@@ -430,7 +430,8 @@ export const ModelUtils = {
   generateProtocolId(name: string, primaryContract: string): string {
     const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
     const contractSuffix = primaryContract.slice(-8);
-    return `${cleanName}-${contractSuffix}`;
+    const timestamp = Date.now().toString(36);
+    return `${cleanName}-${contractSuffix}-${timestamp}`;
   },
 
   /**
