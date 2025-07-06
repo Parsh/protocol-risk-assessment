@@ -1,0 +1,24 @@
+{
+  "id": "assessment-1751798772928-3d903615",
+  "protocolId": "uniswapv3-ea31f984-mcrjrc1t",
+  "status": "PENDING",
+  "overallScore": 0,
+  "riskLevel": "MEDIUM",
+  "categoryScores": {
+    "technical": 0,
+    "governance": 0,
+    "liquidity": 0,
+    "reputation": 0
+  },
+  "recommendations": [],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "COMPREHENSIVE",
+    "executionTime": 0,
+    "dataSourcesUsed": [],
+    "warnings": []
+  },
+  "findings": [],
+  "createdAt": "2025-07-06T10:46:12.933Z",
+  "updatedAt": "2025-07-06T10:46:12.933Z"
+}

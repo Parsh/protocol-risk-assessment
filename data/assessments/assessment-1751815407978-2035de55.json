@@ -1,0 +1,84 @@
+{
+  "id": "assessment-1751815407978-2035de55",
+  "protocolId": "usdc-token-contract-d1e1a4c0-mcrtnvqi",
+  "status": "COMPLETED",
+  "overallScore": 40,
+  "riskLevel": "MEDIUM",
+  "categoryScores": {
+    "technical": 41,
+    "governance": 30,
+    "liquidity": 45,
+    "reputation": 48
+  },
+  "recommendations": [
+    "✅ Risk levels are acceptable - continue monitoring for changes"
+  ],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "STANDARD",
+    "executionTime": 169,
+    "dataSourcesUsed": [
+      "blockchain",
+      "defillama",
+      "coingecko"
+    ],
+    "warnings": [
+      "Scoring confidence: 59%"
+    ]
+  },
+  "findings": [
+    {
+      "id": "finding-1751815408167-1",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "Potential Security Vulnerabilities",
+      "description": "Potential security vulnerabilities detected in smart contracts",
+      "source": "TechnicalAnalyzer",
+      "confidence": 75,
+      "recommendation": "Conduct thorough security audit of smart contracts"
+    },
+    {
+      "id": "finding-1751815408167-2",
+      "category": "LIQUIDITY",
+      "severity": "HIGH",
+      "title": "Low Liquidity Risk",
+      "description": "Low liquidity levels may impact protocol stability",
+      "source": "LiquidityAnalyzer",
+      "confidence": 90,
+      "recommendation": "Increase liquidity through incentive programs"
+    },
+    {
+      "id": "finding-1751815408167-1",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "Potential Security Vulnerabilities",
+      "description": "Potential security vulnerabilities detected in smart contracts",
+      "source": "TechnicalAnalyzer",
+      "confidence": 75,
+      "recommendation": "Conduct thorough security audit of smart contracts"
+    },
+    {
+      "id": "finding-1751815408167-2",
+      "category": "LIQUIDITY",
+      "severity": "HIGH",
+      "title": "Low Liquidity Risk",
+      "description": "Low liquidity levels may impact protocol stability",
+      "source": "LiquidityAnalyzer",
+      "confidence": 90,
+      "recommendation": "Increase liquidity through incentive programs"
+    },
+    {
+      "id": "finding-1751815408167-3",
+      "category": "REPUTATION",
+      "severity": "MEDIUM",
+      "title": "Limited Team Reputation",
+      "description": "Limited development team reputation and track record",
+      "source": "ReputationAnalyzer",
+      "confidence": 70,
+      "recommendation": "Improve transparency and team credentials disclosure"
+    }
+  ],
+  "createdAt": "2025-07-06T15:23:27.995Z",
+  "updatedAt": "2025-07-06T15:23:28.167Z",
+  "completedAt": "2025-07-06T15:23:28.167Z"
+}

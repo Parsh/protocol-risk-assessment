@@ -1,0 +1,9 @@
+{
+  "data": {
+    "status": "0",
+    "message": "NOTOK",
+    "result": "Missing/Invalid API Key"
+  },
+  "timestamp": "2025-07-06T14:08:40.221Z",
+  "expiresAt": "2025-07-06T14:13:40.221Z"
+}

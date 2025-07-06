@@ -1,0 +1,24 @@
+{
+  "id": "assessment-1751797879532-d266c0e7",
+  "protocolId": "testdex-34567890-mcrj86p8",
+  "status": "PENDING",
+  "overallScore": 0,
+  "riskLevel": "MEDIUM",
+  "categoryScores": {
+    "technical": 0,
+    "governance": 0,
+    "liquidity": 0,
+    "reputation": 0
+  },
+  "recommendations": [],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "STANDARD",
+    "executionTime": 0,
+    "dataSourcesUsed": [],
+    "warnings": []
+  },
+  "findings": [],
+  "createdAt": "2025-07-06T10:31:19.535Z",
+  "updatedAt": "2025-07-06T10:31:19.535Z"
+}

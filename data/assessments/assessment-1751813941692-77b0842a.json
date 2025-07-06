@@ -1,0 +1,54 @@
+{
+  "id": "assessment-1751813941692-77b0842a",
+  "protocolId": "usdc-token-contract-d1e1a4c0-mcrssgcg",
+  "status": "COMPLETED",
+  "overallScore": 35,
+  "riskLevel": "MEDIUM",
+  "categoryScores": {
+    "technical": 30,
+    "governance": 30,
+    "liquidity": 45,
+    "reputation": 43
+  },
+  "recommendations": [
+    "✅ Risk levels are acceptable - continue monitoring for changes"
+  ],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "STANDARD",
+    "executionTime": 150,
+    "dataSourcesUsed": [
+      "blockchain",
+      "defillama",
+      "coingecko"
+    ],
+    "warnings": [
+      "Scoring confidence: 55%"
+    ]
+  },
+  "findings": [
+    {
+      "id": "finding-1751813941862-1",
+      "category": "LIQUIDITY",
+      "severity": "HIGH",
+      "title": "Low Liquidity Risk",
+      "description": "Low liquidity levels may impact protocol stability",
+      "source": "LiquidityAnalyzer",
+      "confidence": 90,
+      "recommendation": "Increase liquidity through incentive programs"
+    },
+    {
+      "id": "finding-1751813941862-1",
+      "category": "LIQUIDITY",
+      "severity": "HIGH",
+      "title": "Low Liquidity Risk",
+      "description": "Low liquidity levels may impact protocol stability",
+      "source": "LiquidityAnalyzer",
+      "confidence": 90,
+      "recommendation": "Increase liquidity through incentive programs"
+    }
+  ],
+  "createdAt": "2025-07-06T14:59:01.707Z",
+  "updatedAt": "2025-07-06T14:59:01.863Z",
+  "completedAt": "2025-07-06T14:59:01.863Z"
+}
