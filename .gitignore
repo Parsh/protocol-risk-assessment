@@ -21,6 +21,12 @@ data/assessments/*.json
 data/cache/
 data/logs/*.log
 
+# Backup and test files
+data/**/*.backup
+data/**/*.deleted.*
+*.backup
+*.deleted.*
+
 # IDE
 .vscode/
 .idea/

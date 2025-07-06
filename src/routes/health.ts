@@ -3,6 +3,7 @@ import { asyncHandler } from '../middleware/error-handler';
 import { validate, commonSchemas } from '../middleware/validation';
 import { config } from '../config/environment';
 import { logger } from '../middleware/logging';
+import { fileStorageTest } from '../tests/file-storage.test';
 import Joi from 'joi';
 
 const router = Router();
@@ -108,5 +109,102 @@ router.post('/test-validation',
     });
   })
 );
+
+/**
+ * POST /api/v1/test-storage
+ * Test endpoint to verify file storage operations
+ */
+router.post('/test-storage', asyncHandler(async (req: Request, res: Response) => {
+  const startTime = Date.now();
+  let testsStarted = false;
+  
+  try {
+    logger.info('Running file storage tests...');
+    testsStarted = true;
+    
+    // Run all file storage tests
+    await fileStorageTest.runAllTests();
+    
+    const duration = Date.now() - startTime;
+    
+    const result = {
+      success: true,
+      message: 'All file storage tests passed successfully',
+      duration: `${duration}ms`,
+      timestamp: new Date().toISOString(),
+      tests: [
+        'Data directory initialization',
+        'Protocol repository operations',
+        'Assessment repository operations', 
+        'Concurrent file operations',
+        'Error handling',
+      ],
+    };
+    
+    // Clean up test data after successful tests
+    await fileStorageTest.cleanup();
+    
+    res.status(200).json(result);
+    
+  } catch (error) {
+    logger.error('File storage tests failed:', error);
+    
+    const duration = Date.now() - startTime;
+    
+    // Only clean up if tests actually started (to avoid cleaning up partial test data)
+    if (testsStarted) {
+      try {
+        await fileStorageTest.cleanup();
+      } catch (cleanupError) {
+        logger.warn('Test cleanup failed:', cleanupError);
+      }
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'File storage tests failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      duration: `${duration}ms`,
+      timestamp: new Date().toISOString(),
+    });
+  }
+}));
+
+/**
+ * POST /api/v1/test-concurrent
+ * Test endpoint to verify concurrent file operations only
+ */
+router.post('/test-concurrent', asyncHandler(async (req: Request, res: Response) => {
+  const startTime = Date.now();
+  
+  try {
+    logger.info('Running concurrent operations test...');
+    
+    // Run only concurrent operations test
+    await fileStorageTest.testConcurrentOnly();
+    
+    const duration = Date.now() - startTime;
+    
+    res.status(200).json({
+      success: true,
+      message: 'Concurrent operations test passed',
+      duration: `${duration}ms`,
+      timestamp: new Date().toISOString(),
+    });
+    
+  } catch (error) {
+    logger.error('Concurrent operations test failed:', error);
+    
+    const duration = Date.now() - startTime;
+    
+    res.status(500).json({
+      success: false,
+      message: 'Concurrent operations test failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      duration: `${duration}ms`,
+      timestamp: new Date().toISOString(),
+    });
+  }
+}));
 
 export { router as healthRouter };
