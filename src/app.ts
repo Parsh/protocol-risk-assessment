@@ -7,6 +7,7 @@ import { errorHandler } from './middleware/error-handler';
 import { notFoundHandler } from './middleware/not-found';
 import { healthRouter } from './routes/health';
 import protocolRouter from './routes/protocols';
+import assessmentRouter from './routes/assessments';
 
 export function createApp(): express.Application {
   const app = express();
@@ -51,6 +52,9 @@ export function createApp(): express.Application {
   console.log('🔍 Protocol router stack length:', protocolRouter?.stack?.length || 'unknown');
   app.use('/api/v1/protocols', protocolRouter);
   console.log('🔌 Protocol routes mounted at /api/v1/protocols');
+
+  app.use('/api/v1/assessments', assessmentRouter);
+  console.log('🔌 Assessment routes mounted at /api/v1/assessments');
 
   // 404 handler for undefined routes
   app.use(notFoundHandler);

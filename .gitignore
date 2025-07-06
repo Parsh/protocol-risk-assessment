@@ -21,6 +21,9 @@ data/assessments/*.json
 data/cache/
 data/logs/*.log
 
+# Test data (generated during testing)
+test-data/
+
 # Backup and test files
 data/**/*.backup
 data/**/*.deleted.*
