@@ -103,7 +103,7 @@ A comprehensive risk assessment API for DeFi protocols that evaluates:
           },
           blockchain: {
             type: 'string',
-            enum: ['ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism'],
+            enum: ['ethereum', 'arbitrum', 'optimism'],
             description: 'Blockchain network',
             example: 'ethereum'
           },

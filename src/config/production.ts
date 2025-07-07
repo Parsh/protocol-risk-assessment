@@ -23,8 +23,6 @@ const configSchema = Joi.object({
   
   // External API keys (optional)
   ETHERSCAN_API_KEY: Joi.string().optional(),
-  BSCSCAN_API_KEY: Joi.string().optional(),
-  POLYGONSCAN_API_KEY: Joi.string().optional(),
   COINGECKO_API_KEY: Joi.string().optional(),
   
   // Analysis configuration
@@ -96,8 +94,6 @@ export const productionConfig = {
   // External API keys
   apiKeys: {
     etherscan: envVars.ETHERSCAN_API_KEY || null,
-    bscscan: envVars.BSCSCAN_API_KEY || null,
-    polygonscan: envVars.POLYGONSCAN_API_KEY || null,
     coingecko: envVars.COINGECKO_API_KEY || null,
     admin: envVars.ADMIN_API_KEY || null
   },

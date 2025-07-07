@@ -1,5 +1,6 @@
 import { ExternalApiClient } from './external-api-client';
 import { logger } from '../config/logger';
+import { AxiosRequestConfig } from 'axios';
 
 export interface CoinInfo {
   id: string;
@@ -255,7 +256,7 @@ export class CoinGeckoClient extends ExternalApiClient {
     const queryString = new URLSearchParams(params).toString();
     const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
     
-    const options: RequestInit = {
+    const options: AxiosRequestConfig = {
       method: 'GET',
       headers: {
         'accept': 'application/json',

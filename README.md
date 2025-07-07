@@ -14,7 +14,7 @@ A comprehensive Node.js/TypeScript microservice for multi-dimensional risk asses
 - **💧 Liquidity Analysis**: TVL assessment, volume analysis, market depth, slippage calculations
 - **👥 Reputation Analysis**: Team metrics, development activity, code quality, audit history tracking
 - **🎯 Assessment Orchestrator**: Parallel analyzer execution with comprehensive findings aggregation
-- **📡 Blockchain Integration**: Multi-chain support (Ethereum, BSC, Polygon) with RPC failover
+- **📡 Blockchain Integration**: Ethereum support with RPC failover
 - **🌐 DeFi Data Integration**: DeFiLlama, CoinGecko, Etherscan APIs with intelligent caching
 - **📖 API Documentation**: Interactive Swagger/OpenAPI docs with schema validation
 - **🚀 Production Deployment**: Docker containers, monitoring stack, deployment automation
@@ -94,7 +94,7 @@ curl http://localhost:3000/api/v1/health
 - RESTful assessment API with status tracking and result retrieval
 
 #### ✅ Phase 4: External Data Integration (Week 4-5)
-- Blockchain RPC integration (Ethereum, BSC, Polygon) with failover
+- Blockchain RPC integration (Ethereum) with failover
 - DeFi data APIs (DeFiLlama, CoinGecko) with intelligent caching
 - Circuit breaker patterns and retry logic for resilience
 
@@ -250,9 +250,9 @@ curl http://localhost:3000/api/v1/assessments/assessment-id-here
 - **Testing**: Jest with supertest for API testing
 
 ### External Integrations
-- **Blockchain APIs**: Ethereum, Polygon, BSC RPC endpoints
+- **Blockchain APIs**: Ethereum RPC endpoints
 - **DeFi Data**: DeFiLlama, CoinGecko APIs
-- **Smart Contract Data**: Etherscan, Polygonscan, BSCScan APIs
+- **Smart Contract Data**: Etherscan API
 - **Security Analysis**: Slither static analysis tool
 
 ### Infrastructure

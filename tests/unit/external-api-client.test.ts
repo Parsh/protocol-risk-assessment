@@ -1,5 +1,6 @@
 import { ExternalApiClient, ApiClientConfig, ApiResponse, CircuitBreakerState } from '../../src/services/external-api-client';
 import { logger } from '../../src/config/logger';
+import { AxiosRequestConfig } from 'axios';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -18,7 +19,7 @@ class TestApiClient extends ExternalApiClient {
   // Expose protected method for testing
   public async testMakeRequest<T>(
     endpoint: string,
-    options?: RequestInit,
+    options?: AxiosRequestConfig,
     cacheKey?: string
   ): Promise<ApiResponse<T>> {
     return this.makeRequest<T>(endpoint, options, cacheKey);

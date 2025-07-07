@@ -1,5 +1,6 @@
 import { ExternalApiClient } from './external-api-client';
 import { logger } from '../config/logger';
+import { AxiosRequestConfig } from 'axios';
 
 export interface ProtocolInfo {
   id: string;
@@ -129,7 +130,7 @@ export class DeFiLlamaClient extends ExternalApiClient {
    */
   protected async makeDataRequest<T>(endpoint: string): Promise<T> {
     const cacheKey = `defillama-${endpoint.replace(/[^a-zA-Z0-9]/g, '-')}`;
-    const response = await this.makeRequest<T>(endpoint, { method: 'GET' }, cacheKey);
+    const response = await this.makeRequest<T>(endpoint, { method: 'GET' } as AxiosRequestConfig, cacheKey);
     return response.data;
   }
 

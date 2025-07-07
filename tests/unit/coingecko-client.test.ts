@@ -426,7 +426,7 @@ describe('CoinGeckoClient', () => {
     it('should fetch asset platforms successfully', async () => {
       const mockPlatforms = [
         { id: 'ethereum', chain_identifier: 1, name: 'Ethereum', shortname: 'eth' },
-        { id: 'binance-smart-chain', chain_identifier: 56, name: 'Binance Smart Chain', shortname: 'bsc' }
+        { id: 'arbitrum-one', chain_identifier: 42161, name: 'Arbitrum One', shortname: 'arb' }
       ];
 
       mockMakeRequest.mockResolvedValue({ data: mockPlatforms });

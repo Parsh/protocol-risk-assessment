@@ -107,8 +107,6 @@ export class AssessmentOrchestrator {
     // In production, this would be configured with proper API keys
     this.blockchainClient = createUnifiedBlockchainClient({
       ethereum: { network: 'mainnet' },
-      bsc: { network: 'mainnet' },
-      polygon: { network: 'mainnet' },
       rateLimit: {
         requestsPerSecond: 3, // Conservative rate limiting
         burstSize: 5

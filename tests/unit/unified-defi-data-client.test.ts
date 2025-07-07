@@ -332,14 +332,14 @@ describe('UnifiedDeFiDataClient', () => {
 
     it('should handle chain mapping for CoinGecko', async () => {
       const contractAddress = '0x123456789';
-      const chain = 'bsc';
+      const chain = 'arbitrum';
 
       mockDeFiLlamaClient.getProtocolByAddress.mockResolvedValue(null);
       mockCoinGeckoClient.getCoinByContractAddress.mockRejectedValue(new Error('Not found'));
 
       await client.getProtocolByAddress(contractAddress, chain);
 
-      expect(mockCoinGeckoClient.getCoinByContractAddress).toHaveBeenCalledWith('binance-smart-chain', contractAddress);
+      expect(mockCoinGeckoClient.getCoinByContractAddress).toHaveBeenCalledWith('arbitrum-one', contractAddress);
     });
 
     it('should return null when address not found', async () => {
@@ -448,11 +448,11 @@ describe('UnifiedDeFiDataClient', () => {
       };
       const mockChains = {
         'ethereum': 25000000000,
-        'bsc': 8000000000,
-        'polygon': 5000000000,
+        'arbitrum': 8000000000,
+        'optimism': 5000000000,
         'avalanche': 3000000000,
-        'arbitrum': 2000000000,
-        'optimism': 1000000000
+        'base': 2000000000,
+        'zksync': 1000000000
       };
 
       mockDeFiLlamaClient.getCurrentTvl.mockResolvedValue(mockTvlData);
@@ -595,8 +595,8 @@ describe('UnifiedDeFiDataClient', () => {
         id: 'test',
         name: 'Test Protocol',
         platforms: {
-          'binance-smart-chain': '0xbsc',
-          'polygon-pos': '0xpoly'
+          'arbitrum-one': '0xarb',
+          'optimism': '0xopt'
         }
       };
 
@@ -609,8 +609,8 @@ describe('UnifiedDeFiDataClient', () => {
 
       expect(result!.contractAddresses).toEqual({
         'ethereum': '0xdefi',
-        'binance-smart-chain': '0xbsc',
-        'polygon-pos': '0xpoly'
+        'arbitrum-one': '0xarb',
+        'optimism': '0xopt'
       });
     });
   });

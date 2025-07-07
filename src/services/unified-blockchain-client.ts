@@ -1,12 +1,10 @@
 /**
  * Unified Blockchain Client
  * Provides a unified interface to interact with multiple blockchain APIs
- * (Etherscan, BSCScan, Polygonscan, etc.)
+ * Currently supports Ethereum only
  */
 
-import { EtherscanClient, createEtherscanClient } from './etherscan-client';
-import { BSCScanClient, createBSCScanClient } from './bscscan-client';
-import { PolygonscanClient, createPolygonscanClient } from './polygonscan-client';
+import { EtherscanClient, createEtherscanClient, Transaction } from './etherscan-client';
 import { logger } from '../config/logger';
 import { Blockchain } from '../models';
 
@@ -14,14 +12,6 @@ export interface BlockchainClientConfig {
   ethereum?: {
     apiKey?: string;
     network?: 'mainnet' | 'goerli' | 'sepolia';
-  };
-  bsc?: {
-    apiKey?: string;
-    network?: 'mainnet' | 'testnet';
-  };
-  polygon?: {
-    apiKey?: string;
-    network?: 'mainnet' | 'mumbai';
   };
   rateLimit?: {
     requestsPerSecond?: number;
@@ -54,8 +44,6 @@ export interface TransactionSummary {
 
 export class UnifiedBlockchainClient {
   private etherscanClient?: EtherscanClient;
-  private bscscanClient?: BSCScanClient;
-  private polygonscanClient?: PolygonscanClient;
 
   constructor(config: BlockchainClientConfig) {
     // Initialize blockchain clients based on configuration
@@ -76,40 +64,6 @@ export class UnifiedBlockchainClient {
       });
     }
 
-    if (config.bsc) {
-      const bscConfig: any = {
-        network: config.bsc.network,
-        rateLimit: config.rateLimit
-      };
-      if (config.bsc.apiKey) {
-        bscConfig.apiKey = config.bsc.apiKey;
-      }
-      
-      this.bscscanClient = createBSCScanClient(bscConfig);
-      logger.info('BSC client initialized', {
-        service: 'unified-blockchain-client',
-        network: config.bsc.network || 'mainnet',
-        hasApiKey: !!config.bsc.apiKey
-      });
-    }
-
-    if (config.polygon) {
-      const polygonConfig: any = {
-        network: config.polygon.network,
-        rateLimit: config.rateLimit
-      };
-      if (config.polygon.apiKey) {
-        polygonConfig.apiKey = config.polygon.apiKey;
-      }
-      
-      this.polygonscanClient = createPolygonscanClient(polygonConfig);
-      logger.info('Polygon client initialized', {
-        service: 'unified-blockchain-client',
-        network: config.polygon.network || 'mainnet',
-        hasApiKey: !!config.polygon.apiKey
-      });
-    }
-
     logger.info('UnifiedBlockchainClient initialized', {
       service: 'unified-blockchain-client',
       supportedChains: this.getSupportedChains()
@@ -122,33 +76,19 @@ export class UnifiedBlockchainClient {
   getSupportedChains(): Blockchain[] {
     const chains: Blockchain[] = [];
     if (this.etherscanClient) chains.push(Blockchain.ETHEREUM);
-    if (this.bscscanClient) chains.push(Blockchain.BSC);
-    if (this.polygonscanClient) chains.push(Blockchain.POLYGON);
     return chains;
   }
 
   /**
    * Get the appropriate client for a blockchain
    */
-  private getClient(blockchain: Blockchain): EtherscanClient | BSCScanClient | PolygonscanClient {
+  private getClient(blockchain: Blockchain): EtherscanClient {
     switch (blockchain) {
       case Blockchain.ETHEREUM:
         if (!this.etherscanClient) {
           throw new Error('Ethereum client not configured');
         }
         return this.etherscanClient;
-      
-      case Blockchain.BSC:
-        if (!this.bscscanClient) {
-          throw new Error('BSC client not configured');
-        }
-        return this.bscscanClient;
-      
-      case Blockchain.POLYGON:
-        if (!this.polygonscanClient) {
-          throw new Error('Polygon client not configured');
-        }
-        return this.polygonscanClient;
       
       default:
         throw new Error(`Unsupported blockchain: ${blockchain}`);
@@ -235,7 +175,7 @@ export class UnifiedBlockchainClient {
         sort: 'desc'
       });
 
-      const summaries: TransactionSummary[] = transactions.map(tx => ({
+      const summaries: TransactionSummary[] = transactions.map((tx: Transaction) => ({
         hash: tx.hash,
         from: tx.from,
         to: tx.to,
@@ -322,29 +262,13 @@ export class UnifiedBlockchainClient {
     if (this.etherscanClient) {
       tests.push(
         this.etherscanClient.testConnection()
-          .then(result => ({ blockchain: 'ethereum', connected: result }))
+          .then((result: boolean) => ({ blockchain: 'ethereum', connected: result }))
           .catch(() => ({ blockchain: 'ethereum', connected: false }))
       );
     }
 
-    if (this.bscscanClient) {
-      tests.push(
-        this.bscscanClient.testConnection()
-          .then(result => ({ blockchain: 'bsc', connected: result }))
-          .catch(() => ({ blockchain: 'bsc', connected: false }))
-      );
-    }
-
-    if (this.polygonscanClient) {
-      tests.push(
-        this.polygonscanClient.testConnection()
-          .then(result => ({ blockchain: 'polygon', connected: result }))
-          .catch(() => ({ blockchain: 'polygon', connected: false }))
-      );
-    }
-
     const testResults = await Promise.all(tests);
-    testResults.forEach(result => {
+    testResults.forEach((result: { blockchain: string; connected: boolean }) => {
       results[result.blockchain] = result.connected;
     });
 
@@ -378,7 +302,7 @@ export class UnifiedBlockchainClient {
           offset: 100,
           sort: 'asc'
         });
-        const creationTx = transactions.find(tx => tx.hash === creation.txHash);
+        const creationTx = transactions.find((tx: Transaction) => tx.hash === creation.txHash);
         if (creationTx) {
           timestamp = parseInt(creationTx.timeStamp);
         }
@@ -421,16 +345,12 @@ export function createUnifiedBlockchainClient(config: BlockchainClientConfig): U
 }
 
 /**
- * Create a client with all blockchains enabled (useful for development/testing)
+ * Create a client with Ethereum blockchain support (useful for development/testing)
  */
 export function createFullBlockchainClient(options: {
   ethereumApiKey?: string;
-  bscApiKey?: string;
-  polygonApiKey?: string;
   networks?: {
     ethereum?: 'mainnet' | 'goerli' | 'sepolia';
-    bsc?: 'mainnet' | 'testnet';
-    polygon?: 'mainnet' | 'mumbai';
   };
 }): UnifiedBlockchainClient {
   const config: BlockchainClientConfig = {
@@ -449,26 +369,6 @@ export function createFullBlockchainClient(options: {
       ethConfig.apiKey = options.ethereumApiKey;
     }
     config.ethereum = ethConfig;
-  }
-
-  if (options.bscApiKey || options.networks?.bsc) {
-    const bscConfig: any = {
-      network: options.networks?.bsc || 'mainnet'
-    };
-    if (options.bscApiKey) {
-      bscConfig.apiKey = options.bscApiKey;
-    }
-    config.bsc = bscConfig;
-  }
-
-  if (options.polygonApiKey || options.networks?.polygon) {
-    const polygonConfig: any = {
-      network: options.networks?.polygon || 'mainnet'
-    };
-    if (options.polygonApiKey) {
-      polygonConfig.apiKey = options.polygonApiKey;
-    }
-    config.polygon = polygonConfig;
   }
 
   return new UnifiedBlockchainClient(config);

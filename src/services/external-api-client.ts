@@ -7,6 +7,7 @@
 import { logger } from '../config/logger';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 export interface ApiClientConfig {
   baseUrl: string;
@@ -106,7 +107,7 @@ export abstract class ExternalApiClient {
    */
   protected async makeRequest<T>(
     endpoint: string, 
-    options: RequestInit = {},
+    options: AxiosRequestConfig = {},
     cacheKey?: string
   ): Promise<ApiResponse<T>> {
     const fullUrl = `${this.config.baseUrl}${endpoint}`;
@@ -148,7 +149,7 @@ export abstract class ExternalApiClient {
    */
   private async executeWithRetry<T>(
     url: string, 
-    options: RequestInit
+    options: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
     let lastError: ApiError | undefined;
 
@@ -156,9 +157,11 @@ export abstract class ExternalApiClient {
       try {
         const startTime = Date.now();
         
-        // Add headers (remove timeout as it's not part of RequestInit)
-        const requestOptions: RequestInit = {
+        // Prepare axios config
+        const axiosConfig: AxiosRequestConfig = {
           ...options,
+          url,
+          timeout: this.config.timeout,
           headers: {
             'Content-Type': 'application/json',
             ...this.getAuthHeaders(),
@@ -172,39 +175,10 @@ export abstract class ExternalApiClient {
           method: options.method || 'GET'
         });
 
-        // Create AbortController for timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
-
-        const requestOptionsWithSignal: RequestInit = {
-          ...requestOptions,
-          signal: controller.signal
-        };
-
         try {
-          const response = await fetch(url, requestOptionsWithSignal);
-          clearTimeout(timeoutId);
+          const response: AxiosResponse<T> = await axios(axiosConfig);
           const responseTime = Date.now() - startTime;
 
-          if (!response.ok) {
-            const error = await this.createApiError(response, attempt, responseTime);
-            
-            if (error.retryable && attempt < this.config.retry.maxAttempts) {
-              logger.warn(`Retryable error on attempt ${attempt}`, {
-                service: 'external-api-client',
-                error: error.message,
-                status: error.status
-              });
-              
-              await this.delay(this.calculateBackoffDelay(attempt));
-              continue;
-            }
-            
-            throw error;
-          }
-
-          const data = await response.json() as T;
-          
           logger.info(`API request successful`, {
             service: 'external-api-client',
             url,
@@ -213,41 +187,31 @@ export abstract class ExternalApiClient {
           });
 
           return {
-            data,
+            data: response.data,
             status: response.status,
-            headers: this.extractHeaders(response),
+            headers: this.extractAxiosHeaders(response),
             cached: false,
             timestamp: new Date()
           };
 
         } catch (error) {
-          clearTimeout(timeoutId);
-          lastError = error as ApiError;
+          const responseTime = Date.now() - startTime;
+          const apiError = await this.createAxiosApiError(error as AxiosError, attempt, responseTime);
           
-          // Update circuit breaker on failure
-          this.onRequestFailure();
-
-          if (attempt === this.config.retry.maxAttempts) {
-            logger.error(`All retry attempts exhausted`, {
+          if (apiError.retryable && attempt < this.config.retry.maxAttempts) {
+            logger.warn(`Retryable error on attempt ${attempt}`, {
               service: 'external-api-client',
-              url,
-              attempts: attempt,
-              error: lastError.message
+              error: apiError.message,
+              status: apiError.status
             });
-            break;
+            
+            await this.delay(this.calculateBackoffDelay(attempt));
+            continue;
           }
-
-          if (!lastError.retryable) {
-            logger.error(`Non-retryable error, stopping retries`, {
-              service: 'external-api-client',
-              url,
-              error: lastError.message
-            });
-            break;
-          }
-
-          await this.delay(this.calculateBackoffDelay(attempt));
+          
+          throw apiError;
         }
+
       } catch (error) {
         lastError = error as ApiError;
         
@@ -458,37 +422,49 @@ export abstract class ExternalApiClient {
   }
 
   /**
-   * Create standardized API error
+   * Create standardized API error from axios error
    */
-  private async createApiError(
-    response: Response, 
+  private async createAxiosApiError(
+    error: AxiosError, 
     attempt: number, 
     responseTime: number
   ): Promise<ApiError> {
     let errorBody: any;
-    try {
-      errorBody = await response.text();
-    } catch {
-      errorBody = 'Unable to read error response';
+    let status: number | undefined;
+
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      status = error.response.status;
+      errorBody = error.response.data;
+    } else if (error.request) {
+      // The request was made but no response was received
+      errorBody = 'No response received from server';
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      errorBody = error.message;
     }
 
-    const error = new Error(
-      `API request failed: ${response.status} ${response.statusText}`
+    const apiError = new Error(
+      `API request failed: ${status ? `${status} ` : ''}${error.message}`
     ) as ApiError;
 
-    error.status = response.status;
-    error.response = errorBody;
-    error.retryable = this.isRetryableStatus(response.status);
+    if (status !== undefined) {
+      apiError.status = status;
+    }
+    apiError.response = errorBody;
+    apiError.retryable = status ? this.isRetryableStatus(status) : true; // Network errors are retryable
 
     logger.error(`API request failed`, {
       service: 'external-api-client',
-      status: response.status,
+      status,
       attempt,
       responseTime,
-      retryable: error.retryable
+      retryable: apiError.retryable,
+      error: error.message
     });
 
-    return error;
+    return apiError;
   }
 
   /**
@@ -521,7 +497,22 @@ export abstract class ExternalApiClient {
   }
 
   /**
-   * Extract response headers
+   * Extract response headers from axios response
+   */
+  private extractAxiosHeaders(response: AxiosResponse): Record<string, string> {
+    const headers: Record<string, string> = {};
+    if (response.headers) {
+      for (const [key, value] of Object.entries(response.headers)) {
+        if (typeof value === 'string') {
+          headers[key] = value;
+        }
+      }
+    }
+    return headers;
+  }
+
+  /**
+   * Extract response headers from fetch response
    */
   private extractHeaders(response: Response): Record<string, string> {
     const headers: Record<string, string> = {};

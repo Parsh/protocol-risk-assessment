@@ -200,7 +200,7 @@ describe('Repository Layer - Unit Tests', () => {
         testProtocols = [
           MockDataFactory.createProtocol({ blockchain: 'ethereum', name: 'Ethereum Protocol' }),
           MockDataFactory.createProtocol({ blockchain: 'ethereum', name: 'Another Ethereum Protocol' }),
-          MockDataFactory.createProtocol({ blockchain: 'bsc', name: 'BSC Protocol' }),
+          MockDataFactory.createProtocol({ blockchain: 'ethereum', name: 'Third Ethereum Protocol' }),
         ];
 
         for (const protocol of testProtocols) {
@@ -210,12 +210,12 @@ describe('Repository Layer - Unit Tests', () => {
 
       it('should find protocols by blockchain', async () => {
         const ethereumProtocols = await protocolRepo.findByBlockchain('ethereum');
-        expect(ethereumProtocols).toHaveLength(2);
+        expect(ethereumProtocols).toHaveLength(3);
         expect(ethereumProtocols.every(p => p.blockchain === 'ethereum')).toBe(true);
 
-        const bscProtocols = await protocolRepo.findByBlockchain('bsc');
-        expect(bscProtocols).toHaveLength(1);
-        expect(bscProtocols[0]!.blockchain).toBe('bsc');
+        // Test with a non-existent blockchain
+        const unknownProtocols = await protocolRepo.findByBlockchain('unknown-chain');
+        expect(unknownProtocols).toHaveLength(0);
       });
 
       it('should find protocols by contract address', async () => {

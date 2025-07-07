@@ -237,7 +237,7 @@ export class MockDataFactory {
       riskyLending: this.createProtocol({
         name: 'RiskyLend Protocol',
         category: ProtocolCategory.LENDING,
-        blockchain: Blockchain.BSC,
+        blockchain: Blockchain.ETHEREUM,
         tokenSymbol: 'RISK',
         description: 'High-yield lending protocol with experimental features'
       }),
@@ -246,7 +246,7 @@ export class MockDataFactory {
       yieldFarm: this.createProtocol({
         name: 'SafeYield Farm',
         category: ProtocolCategory.YIELD_FARMING,
-        blockchain: Blockchain.POLYGON,
+        blockchain: Blockchain.ETHEREUM,
         tokenSymbol: 'SYLD',
         description: 'Conservative yield farming with blue-chip assets'
       }),

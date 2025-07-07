@@ -209,7 +209,7 @@ describe('Assessment API Integration Tests', () => {
           protocol: {
             name: 'ListTestDEX2',
             contractAddresses: ['0x1234567890123456789012345678901234567895'],
-            blockchain: 'polygon'
+            blockchain: 'ethereum'
           }
         });
     });

@@ -15,31 +15,7 @@ jest.mock('../../src/services/etherscan-client', () => ({
   }))
 }));
 
-jest.mock('../../src/services/bscscan-client', () => ({
-  createBSCScanClient: jest.fn(() => ({
-    isValidAddress: jest.fn(() => true),
-    getContractCode: jest.fn(() => Promise.resolve('0x456')),
-    getBalance: jest.fn(() => Promise.resolve('2000000000000000000')),
-    getContractSource: jest.fn(() => Promise.resolve({ SourceCode: 'contract MockContract {}' })),
-    getContractCreation: jest.fn(() => Promise.resolve({ creator: '0x456', txHash: '0xdef' })),
-    getMultipleBalances: jest.fn(() => Promise.resolve(['2000000000000000000', '3000000000000000000'])),
-    getTransactionHistory: jest.fn(() => Promise.resolve([])),
-    addApiKey: jest.fn(),
-  }))
-}));
-
-jest.mock('../../src/services/polygonscan-client', () => ({
-  createPolygonscanClient: jest.fn(() => ({
-    isValidAddress: jest.fn(() => true),
-    getContractCode: jest.fn(() => Promise.resolve('0x789')),
-    getBalance: jest.fn(() => Promise.resolve('3000000000000000000')),
-    getContractSource: jest.fn(() => Promise.resolve({ SourceCode: 'contract MockContract {}' })),
-    getContractCreation: jest.fn(() => Promise.resolve({ creator: '0x789', txHash: '0xghi' })),
-    getMultipleBalances: jest.fn(() => Promise.resolve(['3000000000000000000', '4000000000000000000'])),
-    getTransactionHistory: jest.fn(() => Promise.resolve([])),
-    addApiKey: jest.fn(),
-  }))
-}));
+// The BSC and Polygon clients have been removed from the codebase
 
 jest.mock('../../src/config/logger', () => ({
   logger: {
@@ -57,22 +33,14 @@ describe('UnifiedBlockchainClient', () => {
     client = createUnifiedBlockchainClient({
       ethereum: {
         network: 'mainnet'
-      },
-      bsc: {
-        network: 'mainnet'
-      },
-      polygon: {
-        network: 'mainnet'
       }
     });
   });
 
   describe('Constructor and Configuration', () => {
-    it('should initialize with all blockchain clients', () => {
+    it('should initialize with ethereum blockchain client', () => {
       const supportedChains = client.getSupportedChains();
       expect(supportedChains).toContain(Blockchain.ETHEREUM);
-      expect(supportedChains).toContain(Blockchain.BSC);
-      expect(supportedChains).toContain(Blockchain.POLYGON);
     });
 
     it('should initialize with only specific blockchain clients', () => {
@@ -85,16 +53,13 @@ describe('UnifiedBlockchainClient', () => {
 
       const supportedChains = ethOnlyClient.getSupportedChains();
       expect(supportedChains).toContain(Blockchain.ETHEREUM);
-      expect(supportedChains).not.toContain(Blockchain.BSC);
-      expect(supportedChains).not.toContain(Blockchain.POLYGON);
+      expect(supportedChains).toHaveLength(1);
     });
   });
 
   describe('Client Selection', () => {
-    it('should return correct client for each blockchain', () => {
+    it('should return correct client for ethereum blockchain', () => {
       expect(() => client.getContractMetadata('0x1234567890123456789012345678901234567890', Blockchain.ETHEREUM)).not.toThrow();
-      expect(() => client.getContractMetadata('0x1234567890123456789012345678901234567890', Blockchain.BSC)).not.toThrow();
-      expect(() => client.getContractMetadata('0x1234567890123456789012345678901234567890', Blockchain.POLYGON)).not.toThrow();
     });
 
     it('should throw error for unsupported blockchain', async () => {
@@ -105,8 +70,8 @@ describe('UnifiedBlockchainClient', () => {
       });
 
       await expect(
-        ethOnlyClient.getContractMetadata('0x1234567890123456789012345678901234567890', Blockchain.BSC)
-      ).rejects.toThrow('BSC client not configured');
+        ethOnlyClient.getContractMetadata('0x1234567890123456789012345678901234567890', Blockchain.ARBITRUM)
+      ).rejects.toThrow('Unsupported blockchain');
     });
 
     it('should throw error for completely unsupported blockchain', async () => {
@@ -278,32 +243,23 @@ describe('UnifiedBlockchainClient', () => {
     it('should test all configured connections', async () => {
       const mockTestConnection = jest.fn().mockResolvedValue(true);
       (client as any).etherscanClient = { testConnection: mockTestConnection };
-      (client as any).bscscanClient = { testConnection: mockTestConnection };
-      (client as any).polygonscanClient = { testConnection: mockTestConnection };
 
       const results = await client.testAllConnections();
 
       expect(results).toEqual({
-        ethereum: true,
-        bsc: true,
-        polygon: true
+        ethereum: true
       });
     });
 
     it('should handle connection failures gracefully', async () => {
-      const mockTestConnectionSuccess = jest.fn().mockResolvedValue(true);
       const mockTestConnectionFailure = jest.fn().mockRejectedValue(new Error('Connection failed'));
       
-      (client as any).etherscanClient = { testConnection: mockTestConnectionSuccess };
-      (client as any).bscscanClient = { testConnection: mockTestConnectionFailure };
-      (client as any).polygonscanClient = { testConnection: mockTestConnectionSuccess };
+      (client as any).etherscanClient = { testConnection: mockTestConnectionFailure };
 
       const results = await client.testAllConnections();
 
       expect(results).toEqual({
-        ethereum: true,
-        bsc: false,
-        polygon: true
+        ethereum: false
       });
     });
   });

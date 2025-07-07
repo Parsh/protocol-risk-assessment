@@ -111,7 +111,7 @@ setup_directories() {
     
     # Create all necessary directories
     mkdir -p data/{protocols,assessments,cache,logs,temp,backups}
-    mkdir -p data/cache/{etherscan,bscscan,polygonscan,defillama,coingecko,slither}
+    mkdir -p data/cache/{etherscan,defillama,coingecko,slither}
     mkdir -p logs
     mkdir -p tmp
     

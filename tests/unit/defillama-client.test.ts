@@ -457,8 +457,8 @@ describe('DeFiLlamaClient', () => {
     it('should fetch chain TVL successfully', async () => {
       const mockChainTvl = {
         'ethereum': 25000000000,
-        'bsc': 8000000000,
-        'polygon': 3000000000
+        'arbitrum': 8000000000,
+        'optimism': 3000000000
       };
 
       mockMakeRequest.mockResolvedValue({ data: mockChainTvl });

@@ -5,6 +5,7 @@
 
 import { ExternalApiClient, ApiClientConfig, ApiResponse } from './external-api-client';
 import { logger } from '../config/logger';
+import { AxiosRequestConfig } from 'axios';
 import * as path from 'path';
 
 export interface EtherscanConfig extends ApiClientConfig {
@@ -166,7 +167,7 @@ export class EtherscanClient extends ExternalApiClient {
     try {
       const response = await this.makeRequest<ContractSourceResponse>(
         endpoint,
-        { method: 'GET' },
+        { method: 'GET' } as AxiosRequestConfig,
         cacheKey
       );
 
@@ -233,7 +234,7 @@ export class EtherscanClient extends ExternalApiClient {
     try {
       const response = await this.makeRequest<ContractCreationResponse>(
         endpoint,
-        { method: 'GET' },
+        { method: 'GET' } as AxiosRequestConfig,
         cacheKey
       );
 
@@ -302,7 +303,7 @@ export class EtherscanClient extends ExternalApiClient {
     try {
       const response = await this.makeRequest<TransactionResponse>(
         endpoint,
-        { method: 'GET' },
+        { method: 'GET' } as AxiosRequestConfig,
         cacheKey
       );
 
@@ -353,7 +354,7 @@ export class EtherscanClient extends ExternalApiClient {
     try {
       const response = await this.makeRequest<BalanceResponse>(
         endpoint,
-        { method: 'GET' },
+        { method: 'GET' } as AxiosRequestConfig,
         cacheKey
       );
 
@@ -415,7 +416,7 @@ export class EtherscanClient extends ExternalApiClient {
         result: Array<{ account: string; balance: string }>;
       }>(
         endpoint,
-        { method: 'GET' },
+        { method: 'GET' } as AxiosRequestConfig,
         cacheKey
       );
 
@@ -481,7 +482,7 @@ export class EtherscanClient extends ExternalApiClient {
       });
 
       const endpoint = `?${this.buildQueryString(params)}`;
-      const response = await this.makeRequest(endpoint, { method: 'GET' });
+      const response = await this.makeRequest(endpoint, { method: 'GET' } as AxiosRequestConfig);
 
       const isConnected = response.status === 200;
       

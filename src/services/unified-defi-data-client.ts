@@ -225,8 +225,6 @@ export class UnifiedDeFiDataClient {
         // Map chain names to CoinGecko platform IDs
         const platformMapping: Record<string, string> = {
           'ethereum': 'ethereum',
-          'bsc': 'binance-smart-chain',
-          'polygon': 'polygon-pos',
           'arbitrum': 'arbitrum-one',
           'optimism': 'optimistic-ethereum'
         };

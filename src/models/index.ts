@@ -73,14 +73,14 @@ export enum FindingSeverity {
 }
 
 // Supported blockchain networks
+// Note: Smart contract analysis (Slither) is only available for Ethereum contracts
 export enum Blockchain {
   ETHEREUM = 'ethereum',
-  BSC = 'bsc',
-  POLYGON = 'polygon',
   ARBITRUM = 'arbitrum',
   OPTIMISM = 'optimism',
   AVALANCHE = 'avalanche',
-  FANTOM = 'fantom'
+  FANTOM = 'fantom',
+  SOLANA = 'solana'
 }
 
 //

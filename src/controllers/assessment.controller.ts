@@ -81,7 +81,7 @@ const createAssessmentSchema = Joi.object({
       .items(Joi.string().pattern(/^0x[a-fA-F0-9]{40}$/))
       .min(1)
       .required(),
-    blockchain: Joi.string().valid('ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism', 'avalanche', 'fantom').required(),
+    blockchain: Joi.string().valid('ethereum', 'arbitrum', 'optimism', 'avalanche', 'fantom').required(),
     tokenSymbol: Joi.string().min(1).max(10).optional(),
     website: Joi.string().uri().optional(),
     documentation: Joi.string().uri().optional(),
