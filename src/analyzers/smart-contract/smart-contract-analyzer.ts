@@ -32,6 +32,7 @@ export interface SmartContractInput {
   sourceCode?: string;
   contractName?: string;
   blockchain?: string;
+  compilerVersion?: string;
 }
 
 export class SmartContractAnalyzer {
@@ -56,10 +57,14 @@ export class SmartContractAnalyzer {
       const contractName = input.contractName || this.extractContractName(sourceCode);
 
       // Run Slither analysis
+      const slitherOptions: SlitherOptions = { ...options };
+      if (input.compilerVersion) {
+        slitherOptions.compilerVersion = input.compilerVersion;
+      }
       const slitherReport = await slitherService.analyzeContract(
         sourceCode,
         contractName,
-        options
+        slitherOptions
       );
 
       logger.debug('Slither analysis completed, parsing vulnerabilities', {

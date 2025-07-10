@@ -9,6 +9,7 @@ export interface SlitherOptions {
   configFile?: string;
   timeout?: number;
   compilationTarget?: string;
+  compilerVersion?: string;
 }
 
 export interface SlitherReport {

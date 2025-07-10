@@ -1,0 +1,12 @@
+{
+  "id": "uniswap-v2-9cc5aA6f-mcxkii91",
+  "name": "Uniswap V2",
+  "contractAddresses": [
+    "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
+  ],
+  "blockchain": "ethereum",
+  "category": "OTHER",
+  "tags": [],
+  "createdAt": "2025-07-10T15:53:57.734Z",
+  "updatedAt": "2025-07-10T15:53:57.734Z"
+}

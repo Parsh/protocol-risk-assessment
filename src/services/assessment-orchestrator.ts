@@ -21,6 +21,7 @@ import {
 } from '../models/index';
 import { AssessmentRepository, ProtocolRepository } from '../repositories/index';
 import { logger } from '../config/logger';
+import { config } from '../config/environment';
 import { RiskScoringEngine, ScoringInput } from './risk-scoring-engine';
 import { UnifiedBlockchainClient, createUnifiedBlockchainClient } from './unified-blockchain-client';
 import { UnifiedDeFiDataClient } from './unified-defi-data-client';
@@ -103,10 +104,14 @@ export class AssessmentOrchestrator {
     this.assessmentRepo = new AssessmentRepository();
     this.riskScoringEngine = new RiskScoringEngine();
     
-    // Initialize blockchain client with default configuration
-    // In production, this would be configured with proper API keys
+    // Initialize blockchain client with proper API key configuration
+    const ethConfig: any = { network: 'mainnet' };
+    if (config.etherscanApiKey) {
+      ethConfig.apiKey = config.etherscanApiKey;
+    }
+    
     this.blockchainClient = createUnifiedBlockchainClient({
-      ethereum: { network: 'mainnet' },
+      ethereum: ethConfig,
       rateLimit: {
         requestsPerSecond: 3, // Conservative rate limiting
         burstSize: 5
@@ -741,10 +746,13 @@ export class AssessmentOrchestrator {
       // Analyze each contract using smart contract analyzer
       for (const contractAddress of protocol.contractAddresses) {
         try {
+          const contractData = blockchainData[contractAddress];
           const analysisResult = await smartContractAnalyzer.analyzeContract({
             contractAddress,
             blockchain: protocol.blockchain,
-            contractName: `${protocol.name}-contract-${contractAddress.slice(-8)}`
+            contractName: `${protocol.name}-contract-${contractAddress.slice(-8)}`,
+            sourceCode: contractData?.metadata?.sourceCode,
+            compilerVersion: contractData?.metadata?.compilerVersion
           });
 
           if (analysisResult.vulnerabilities) {

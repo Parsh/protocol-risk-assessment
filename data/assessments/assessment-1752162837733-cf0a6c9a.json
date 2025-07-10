@@ -1,0 +1,55 @@
+{
+  "id": "assessment-1752162837733-cf0a6c9a",
+  "protocolId": "uniswap-v2-9cc5aA6f-mcxkii91",
+  "status": "COMPLETED",
+  "overallScore": 39,
+  "riskLevel": "MEDIUM",
+  "categoryScores": {
+    "technical": 46,
+    "governance": 30,
+    "liquidity": 35,
+    "reputation": 43
+  },
+  "recommendations": [
+    "✅ Risk levels are acceptable - continue monitoring for changes"
+  ],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "STANDARD",
+    "executionTime": 3190,
+    "dataSourcesUsed": [
+      "blockchain",
+      "defillama",
+      "coingecko"
+    ],
+    "warnings": [
+      "Total findings: 6 (6 from analyzers, 0 from scoring)",
+      "Scoring confidence: 52%"
+    ]
+  },
+  "findings": [
+    {
+      "id": "finding-1752162840940-1",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "Potential Security Vulnerabilities",
+      "description": "Potential security vulnerabilities detected in smart contracts",
+      "source": "TechnicalAnalyzer",
+      "confidence": 75,
+      "recommendation": "Conduct thorough security audit of smart contracts"
+    },
+    {
+      "id": "finding-1752162840940-1",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "Potential Security Vulnerabilities",
+      "description": "Potential security vulnerabilities detected in smart contracts",
+      "source": "TechnicalAnalyzer",
+      "confidence": 75,
+      "recommendation": "Conduct thorough security audit of smart contracts"
+    }
+  ],
+  "createdAt": "2025-07-10T15:53:57.746Z",
+  "updatedAt": "2025-07-10T15:54:00.940Z",
+  "completedAt": "2025-07-10T15:54:00.940Z"
+}

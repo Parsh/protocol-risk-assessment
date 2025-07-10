@@ -1,0 +1,34 @@
+{
+  "id": "assessment-1752162544675-f247a745",
+  "protocolId": "usdc-test-c5d8e1c1-mcxkc84j",
+  "status": "COMPLETED",
+  "overallScore": 34,
+  "riskLevel": "MEDIUM",
+  "categoryScores": {
+    "technical": 35,
+    "governance": 30,
+    "liquidity": 30,
+    "reputation": 43
+  },
+  "recommendations": [
+    "✅ Risk levels are acceptable - continue monitoring for changes"
+  ],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "STANDARD",
+    "executionTime": 1823,
+    "dataSourcesUsed": [
+      "blockchain",
+      "defillama",
+      "coingecko"
+    ],
+    "warnings": [
+      "Total findings: 9 (8 from analyzers, 1 from scoring)",
+      "Scoring confidence: 50%"
+    ]
+  },
+  "findings": [],
+  "createdAt": "2025-07-10T15:49:04.685Z",
+  "updatedAt": "2025-07-10T15:49:06.513Z",
+  "completedAt": "2025-07-10T15:49:06.513Z"
+}

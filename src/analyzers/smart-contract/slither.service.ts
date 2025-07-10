@@ -181,9 +181,10 @@ export class SlitherService {
       targetPath,
       '--json', outputFile,
       '--config-file', configFile,
-      '--solc', '/Users/psyched/.solc-select/artifacts/solc-0.8.19/solc-0.8.19',
       ...this.buildDetectorArgs(options)
     ];
+
+    // Note: Removed --solc flag to let Slither use the appropriate compiler version automatically
 
     logger.debug(`Running Slither with args`, {
       analysisId,
@@ -402,6 +403,41 @@ export class SlitherService {
         'DIRECTORY_ACCESS_FAILED',
         error
       );
+    }
+  }
+
+  /**
+   * Get the path to the appropriate Solidity compiler version
+   */
+  private getSolcPath(compilerVersion: string): string | null {
+    try {
+      // Extract version number from compiler version string (e.g., "v0.5.16+commit.9c3226ce" -> "0.5.16")
+      const versionMatch = compilerVersion.match(/v?(\d+\.\d+\.\d+)/);
+      if (!versionMatch) {
+        logger.warn(`Unable to parse compiler version: ${compilerVersion}`);
+        return null;
+      }
+
+      const version = versionMatch[1];
+      
+      // Try common solc installation paths
+      const possiblePaths = [
+        `/Users/psyched/.solc-select/artifacts/solc-${version}/solc-${version}`,
+        `/usr/local/bin/solc-${version}`,
+        `/opt/homebrew/bin/solc-${version}`,
+        // Fallback to system solc if version matches
+        'solc'
+      ];
+
+      // For now, return the first path and let Slither handle it
+      // In a production environment, you'd want to verify the file exists
+      return possiblePaths[0] || null;
+
+    } catch (error) {
+      logger.warn(`Error determining solc path for version ${compilerVersion}`, {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      return null;
     }
   }
 

@@ -1,0 +1,222 @@
+{
+  "data": {
+    "coins": [
+      {
+        "id": "uniswap",
+        "name": "Uniswap",
+        "api_symbol": "uniswap",
+        "symbol": "UNI",
+        "market_cap_rank": 35,
+        "thumb": "https://coin-images.coingecko.com/coins/images/12504/thumb/uniswap-logo.png",
+        "large": "https://coin-images.coingecko.com/coins/images/12504/large/uniswap-logo.png"
+      },
+      {
+        "id": "uniswap-wormhole",
+        "name": "Uniswap (Wormhole)",
+        "api_symbol": "uniswap-wormhole",
+        "symbol": "UNI",
+        "market_cap_rank": null,
+        "thumb": "https://coin-images.coingecko.com/coins/images/22969/thumb/UNI_wh_small.png",
+        "large": "https://coin-images.coingecko.com/coins/images/22969/large/UNI_wh_small.png"
+      },
+      {
+        "id": "bridged-uniswap-lightlink",
+        "name": "Bridged Uniswap (Lightlink)",
+        "api_symbol": "bridged-uniswap-lightlink",
+        "symbol": "UNI.E",
+        "market_cap_rank": null,
+        "thumb": "https://coin-images.coingecko.com/coins/images/32022/thumb/uni_ll.png",
+        "large": "https://coin-images.coingecko.com/coins/images/32022/large/uni_ll.png"
+      }
+    ],
+    "exchanges": [
+      {
+        "id": "uniswap_v3",
+        "name": "Uniswap V3 (Ethereum)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/665/thumb/uniswap-v3.png",
+        "large": "https://coin-images.coingecko.com/markets/images/665/large/uniswap-v3.png"
+      },
+      {
+        "id": "uniswap-v4-ethereum",
+        "name": "Uniswap V4 (Ethereum)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11846/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11846/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap-v4-unichain",
+        "name": "Uniswap V4 (Unichain)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11868/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11868/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap-bsc",
+        "name": "Uniswap V3 (BSC)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/1092/thumb/uniswap.jpeg",
+        "large": "https://coin-images.coingecko.com/markets/images/1092/large/uniswap.jpeg"
+      },
+      {
+        "id": "uniswap_v3_arbitrum",
+        "name": "Uniswap V3 (Arbitrum One)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/702/thumb/uniswap-v3.png",
+        "large": "https://coin-images.coingecko.com/markets/images/702/large/uniswap-v3.png"
+      },
+      {
+        "id": "uniswap-v3-base",
+        "name": "Uniswap V3 (Base)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/1212/thumb/uniswap-v3.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/1212/large/uniswap-v3.jpg"
+      },
+      {
+        "id": "uniswap_v2",
+        "name": "Uniswap V2 (Ethereum)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/535/thumb/256x256_Black-1.png",
+        "large": "https://coin-images.coingecko.com/markets/images/535/large/256x256_Black-1.png"
+      },
+      {
+        "id": "uniswap_v3_polygon_pos",
+        "name": "Uniswap V3 (Polygon)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/752/thumb/uniswap-polygon.png",
+        "large": "https://coin-images.coingecko.com/markets/images/752/large/uniswap-polygon.png"
+      },
+      {
+        "id": "uniswap-v4-arbitrum",
+        "name": "Uniswap V4 (Arbitrum)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11848/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11848/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap-v4-bsc",
+        "name": "Uniswap V4 (BSC)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11850/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11850/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap-v4-base",
+        "name": "Uniswap V4 (Base)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11842/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11842/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap-v2-base",
+        "name": "Uniswap V2 (Base)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/1472/thumb/uniswap.png",
+        "large": "https://coin-images.coingecko.com/markets/images/1472/large/uniswap.png"
+      },
+      {
+        "id": "uniswap-v4-polygon",
+        "name": "Uniswap V4 (Polygon)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11843/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11843/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap_v3_optimism",
+        "name": "Uniswap V3 (Optimism)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/725/thumb/uniswap-v3.png",
+        "large": "https://coin-images.coingecko.com/markets/images/725/large/uniswap-v3.png"
+      },
+      {
+        "id": "uniswap-v3-avalanche",
+        "name": "Uniswap V3 (Avalanche)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/1182/thumb/uniswap.jpeg",
+        "large": "https://coin-images.coingecko.com/markets/images/1182/large/uniswap.jpeg"
+      },
+      {
+        "id": "uniswap_v3_celo",
+        "name": "Uniswap V3 (Celo)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/1099/thumb/uniswap.jpeg",
+        "large": "https://coin-images.coingecko.com/markets/images/1099/large/uniswap.jpeg"
+      },
+      {
+        "id": "uniswap-v4-optimism",
+        "name": "Uniswap V4 (Optimism)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11847/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11847/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap-v3-abstract",
+        "name": "Uniswap V3 (Abstract)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11840/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11840/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap-v3-unichain",
+        "name": "Uniswap V3 (Unichain)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11864/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11864/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap-v3-world-chain",
+        "name": "Uniswap V3 (World Chain)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11735/thumb/uniswap-v3.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11735/large/uniswap-v3.jpg"
+      },
+      {
+        "id": "uniswap-v2-abstract",
+        "name": "Uniswap V2 (Abstract)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11841/thumb/uniswap.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11841/large/uniswap.jpg"
+      },
+      {
+        "id": "uniswap-v2-arbitrum",
+        "name": "Uniswap V2 (Arbitrum)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/1474/thumb/uniswapv2.jpeg",
+        "large": "https://coin-images.coingecko.com/markets/images/1474/large/uniswapv2.jpeg"
+      },
+      {
+        "id": "uniswap-v3-zksync",
+        "name": "Uniswap V3 (zkSync)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/1663/thumb/uniswap-v3.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/1663/large/uniswap-v3.jpg"
+      },
+      {
+        "id": "reservoir-v3",
+        "name": "Uniswap V3 (Reservoir on Zero)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/11928/thumb/reservoir.jpg",
+        "large": "https://coin-images.coingecko.com/markets/images/11928/large/reservoir.jpg"
+      },
+      {
+        "id": "uniswap-v2-polygon",
+        "name": "Uniswap V2 (Polygon)",
+        "market_type": "spot",
+        "thumb": "https://coin-images.coingecko.com/markets/images/1487/thumb/uniswapv2.jpeg",
+        "large": "https://coin-images.coingecko.com/markets/images/1487/large/uniswapv2.jpeg"
+      }
+    ],
+    "icos": [],
+    "categories": [],
+    "nfts": [
+      {
+        "id": "uniswap-v3-positions",
+        "name": "Uniswap V3 Positions",
+        "symbol": "UNI-V3-POS",
+        "thumb": "https://coin-images.coingecko.com/nft_contracts/images/1644/thumb/https-fanbase-1-s3-amazonaws-com-quixotic-collection-profile-wg2etafd_400x400-jpeg.jpg"
+      }
+    ]
+  },
+  "timestamp": "2025-07-10T17:18:20.744Z",
+  "expiresAt": "2025-07-10T17:23:20.744Z"
+}
