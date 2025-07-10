@@ -1,0 +1,65 @@
+{
+  "id": "assessment-1751864356456-854a0ad2",
+  "protocolId": "protocol-2",
+  "status": "COMPLETED",
+  "overallScore": 27,
+  "riskLevel": "LOW",
+  "categoryScores": {
+    "technical": 10,
+    "governance": 30,
+    "liquidity": 45,
+    "reputation": 43
+  },
+  "recommendations": [
+    "✅ Risk levels are acceptable - continue monitoring for changes"
+  ],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "STANDARD",
+    "executionTime": 219,
+    "dataSourcesUsed": [
+      "blockchain",
+      "defillama",
+      "coingecko"
+    ],
+    "warnings": [
+      "Total findings: 6 (6 from analyzers, 0 from scoring)",
+      "Scoring confidence: 57%"
+    ]
+  },
+  "findings": [
+    {
+      "id": "finding-1751864356689-1",
+      "category": "LIQUIDITY",
+      "severity": "HIGH",
+      "title": "Low Liquidity Risk",
+      "description": "Low liquidity levels may impact protocol stability",
+      "source": "LiquidityAnalyzer",
+      "confidence": 90,
+      "recommendation": "Increase liquidity through incentive programs"
+    },
+    {
+      "id": "finding-1751864356689-1",
+      "category": "LIQUIDITY",
+      "severity": "HIGH",
+      "title": "Low Liquidity Risk",
+      "description": "Low liquidity levels may impact protocol stability",
+      "source": "LiquidityAnalyzer",
+      "confidence": 90,
+      "recommendation": "Increase liquidity through incentive programs"
+    },
+    {
+      "id": "finding-1751864356689-2",
+      "category": "REPUTATION",
+      "severity": "MEDIUM",
+      "title": "Limited Team Reputation",
+      "description": "Limited development team reputation and track record",
+      "source": "ReputationAnalyzer",
+      "confidence": 70,
+      "recommendation": "Improve transparency and team credentials disclosure"
+    }
+  ],
+  "createdAt": "2025-07-07T04:59:16.465Z",
+  "updatedAt": "2025-07-07T04:59:16.689Z",
+  "completedAt": "2025-07-07T04:59:16.689Z"
+}

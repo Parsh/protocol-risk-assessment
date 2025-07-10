@@ -1,0 +1,55 @@
+{
+  "id": "assessment-1751865655253-b7405b60",
+  "protocolId": "protocol-2",
+  "status": "COMPLETED",
+  "overallScore": 24,
+  "riskLevel": "LOW",
+  "categoryScores": {
+    "technical": 5,
+    "governance": 30,
+    "liquidity": 45,
+    "reputation": 35
+  },
+  "recommendations": [
+    "✅ Risk levels are acceptable - continue monitoring for changes"
+  ],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "STANDARD",
+    "executionTime": 175,
+    "dataSourcesUsed": [
+      "blockchain",
+      "defillama",
+      "coingecko"
+    ],
+    "warnings": [
+      "Total findings: 6 (6 from analyzers, 0 from scoring)",
+      "Scoring confidence: 55%"
+    ]
+  },
+  "findings": [
+    {
+      "id": "finding-1751865655449-1",
+      "category": "LIQUIDITY",
+      "severity": "HIGH",
+      "title": "Low Liquidity Risk",
+      "description": "Low liquidity levels may impact protocol stability",
+      "source": "LiquidityAnalyzer",
+      "confidence": 90,
+      "recommendation": "Increase liquidity through incentive programs"
+    },
+    {
+      "id": "finding-1751865655449-1",
+      "category": "LIQUIDITY",
+      "severity": "HIGH",
+      "title": "Low Liquidity Risk",
+      "description": "Low liquidity levels may impact protocol stability",
+      "source": "LiquidityAnalyzer",
+      "confidence": 90,
+      "recommendation": "Increase liquidity through incentive programs"
+    }
+  ],
+  "createdAt": "2025-07-07T05:20:55.262Z",
+  "updatedAt": "2025-07-07T05:20:55.449Z",
+  "completedAt": "2025-07-07T05:20:55.449Z"
+}
