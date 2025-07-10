@@ -1,21 +1,21 @@
 {
   "id": "protocol-8",
-  "name": "SushiSwap",
+  "name": "Spark",
   "contractAddresses": [
-    "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac"
+    "0x6E3c5769fF1fB3d7b9b1e1e1e1e1e1e1e1e1e1e1"
   ],
   "blockchain": "ethereum",
-  "tokenSymbol": "SUSHI",
-  "website": "https://sushi.com",
-  "documentation": "https://docs.sushi.com",
-  "description": "A community-driven DEX and DeFi suite offering swaps, yield farming, and lending.",
-  "category": "DEX",
+  "tokenSymbol": "SPARK",
+  "website": "https://sparkprotocol.io",
+  "documentation": "https://docs.sparkprotocol.io",
+  "description": "A lending and borrowing protocol forked from Aave, focused on DAI and Ethereum assets.",
+  "category": "Lending",
   "tags": [
     "defi",
-    "exchange",
-    "yield",
-    "farming"
+    "lending",
+    "borrowing",
+    "ethereum"
   ],
-  "createdAt": "2020-08-28T00:00:00.000Z",
+  "createdAt": "2023-05-01T00:00:00.000Z",
   "updatedAt": "2025-07-06T12:00:00.000Z"
 }

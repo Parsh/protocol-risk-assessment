@@ -8,7 +8,7 @@
   "tokenSymbol": "CRV",
   "website": "https://curve.fi",
   "documentation": "https://docs.curve.fi",
-  "description": "A DEX optimized for low-slippage swaps between stablecoins and pegged assets.",
+  "description": "A DEX optimized for stablecoin and pegged asset swaps with low slippage and high capital efficiency.",
   "category": "DEX",
   "tags": [
     "defi",

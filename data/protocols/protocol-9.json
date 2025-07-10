@@ -1,21 +1,21 @@
 {
   "id": "protocol-9",
-  "name": "Balancer",
+  "name": "ether.fi",
   "contractAddresses": [
-    "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+    "0x1234567890abcdef1234567890abcdef12345678"
   ],
   "blockchain": "ethereum",
-  "tokenSymbol": "BAL",
-  "website": "https://balancer.fi",
-  "documentation": "https://docs.balancer.fi",
-  "description": "A decentralized portfolio manager and automated market maker supporting multi-asset pools.",
-  "category": "DEX",
+  "tokenSymbol": "ETHFI",
+  "website": "https://www.ether.fi",
+  "documentation": "https://docs.ether.fi",
+  "description": "A decentralized liquid staking platform for Ethereum.",
+  "category": "Staking",
   "tags": [
     "defi",
-    "portfolio",
-    "amm",
-    "liquidity"
+    "staking",
+    "liquid-staking",
+    "ethereum"
   ],
-  "createdAt": "2020-03-31T00:00:00.000Z",
+  "createdAt": "2023-01-01T00:00:00.000Z",
   "updatedAt": "2025-07-06T12:00:00.000Z"
 }

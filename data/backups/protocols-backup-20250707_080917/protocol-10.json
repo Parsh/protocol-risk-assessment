@@ -1,0 +1,21 @@
+{
+  "id": "protocol-10",
+  "name": "PancakeSwap",
+  "contractAddresses": [
+    "0x0eD7e52944161450477ee417DE9Cd3a859b14fD0"
+  ],
+  "blockchain": "binance-smart-chain",
+  "tokenSymbol": "CAKE",
+  "website": "https://pancakeswap.finance",
+  "documentation": "https://docs.pancakeswap.finance",
+  "description": "A leading DEX on BNB Chain, offering swaps, yield farming, and lotteries.",
+  "category": "DEX",
+  "tags": [
+    "defi",
+    "exchange",
+    "yield",
+    "bnb-chain"
+  ],
+  "createdAt": "2020-09-20T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

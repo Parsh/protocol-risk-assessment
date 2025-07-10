@@ -1,5 +1,5 @@
 {
-  "id": "protocol-10",
+  "id": "protocol-5",
   "name": "Compound",
   "contractAddresses": [
     "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B"
@@ -8,7 +8,7 @@
   "tokenSymbol": "COMP",
   "website": "https://compound.finance",
   "documentation": "https://docs.compound.finance",
-  "description": "A decentralized money market protocol for lending and borrowing crypto assets.",
+  "description": "A decentralized money market protocol enabling users to lend and borrow crypto assets permissionlessly.",
   "category": "Lending",
   "tags": [
     "defi",

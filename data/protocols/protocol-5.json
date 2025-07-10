@@ -1,21 +1,21 @@
 {
   "id": "protocol-5",
-  "name": "Compound",
+  "name": "EigenLayer",
   "contractAddresses": [
-    "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B"
+    "0x0e306D6b7Df2e6A5d4c2F4c4f8d3e7bA6e4c5e9A"
   ],
   "blockchain": "ethereum",
-  "tokenSymbol": "COMP",
-  "website": "https://compound.finance",
-  "documentation": "https://docs.compound.finance",
-  "description": "A decentralized money market protocol enabling users to lend and borrow crypto assets permissionlessly.",
-  "category": "Lending",
+  "tokenSymbol": "EIGEN",
+  "website": "https://www.eigenlayer.xyz",
+  "documentation": "https://docs.eigenlayer.xyz",
+  "description": "Ethereum restaking protocol allowing users to earn additional rewards by restaking ETH and LSTs.",
+  "category": "Restaking",
   "tags": [
     "defi",
-    "lending",
-    "borrowing",
-    "governance"
+    "staking",
+    "restaking",
+    "ethereum"
   ],
-  "createdAt": "2018-09-26T00:00:00.000Z",
+  "createdAt": "2023-04-01T00:00:00.000Z",
   "updatedAt": "2025-07-06T12:00:00.000Z"
 }

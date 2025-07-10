@@ -8,7 +8,7 @@
   "tokenSymbol": "AAVE",
   "website": "https://aave.com",
   "documentation": "https://docs.aave.com",
-  "description": "A leading decentralized lending and borrowing protocol with support for multiple assets and advanced features.",
+  "description": "A decentralized lending and borrowing protocol supporting multiple assets and advanced features like flash loans.",
   "category": "Lending",
   "tags": [
     "defi",

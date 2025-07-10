@@ -1,6 +1,6 @@
 {
-  "id": "protocol-6",
-  "name": "Sky (formerly MakerDAO)",
+  "id": "protocol-4",
+  "name": "MakerDAO",
   "contractAddresses": [
     "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
   ],
@@ -8,7 +8,7 @@
   "tokenSymbol": "MKR",
   "website": "https://makerdao.com",
   "documentation": "https://docs.makerdao.com",
-  "description": "Protocol behind DAI, the leading decentralized stablecoin, now rebranded as Sky.",
+  "description": "The protocol behind DAI, a decentralized stablecoin backed by crypto collateral and governed by MKR holders.",
   "category": "Stablecoin",
   "tags": [
     "defi",

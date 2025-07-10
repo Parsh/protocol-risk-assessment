@@ -1,0 +1,21 @@
+{
+  "id": "protocol-17",
+  "name": "Marinade Finance",
+  "contractAddresses": [
+    "Mar1naD111111111111111111111111111111111111"
+  ],
+  "blockchain": "solana",
+  "tokenSymbol": "MNDE",
+  "website": "https://marinade.finance",
+  "documentation": "https://docs.marinade.finance",
+  "description": "A liquid staking protocol for Solana, enabling users to stake SOL and receive mSOL.",
+  "category": "Staking",
+  "tags": [
+    "defi",
+    "staking",
+    "solana",
+    "liquid-staking"
+  ],
+  "createdAt": "2021-08-02T00:00:00.000Z",
+  "updatedAt": "2025-07-06T12:00:00.000Z"
+}

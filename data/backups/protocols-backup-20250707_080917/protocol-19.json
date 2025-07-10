@@ -1,5 +1,5 @@
 {
-  "id": "protocol-4",
+  "id": "protocol-19",
   "name": "Lido",
   "contractAddresses": [
     "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
@@ -8,7 +8,7 @@
   "tokenSymbol": "LDO",
   "website": "https://lido.fi",
   "documentation": "https://docs.lido.fi",
-  "description": "The largest liquid staking protocol for Ethereum, enabling users to stake ETH and receive stETH.",
+  "description": "A liquid staking protocol for ETH and other PoS assets, allowing users to earn staking rewards without locking assets.",
   "category": "Staking",
   "tags": [
     "defi",

@@ -1,21 +1,21 @@
 {
   "id": "protocol-7",
-  "name": "Yearn Finance",
+  "name": "Ethena",
   "contractAddresses": [
-    "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
+    "0x57cB4bA2f4A3A4d1B1a4bA5B4cA4bA4B4cA4bA5B"
   ],
   "blockchain": "ethereum",
-  "tokenSymbol": "YFI",
-  "website": "https://yearn.finance",
-  "documentation": "https://docs.yearn.finance",
-  "description": "A yield aggregator that optimizes DeFi yields through automated strategies and vaults.",
-  "category": "Yield Aggregator",
+  "tokenSymbol": "ENA",
+  "website": "https://www.ethena.fi",
+  "documentation": "https://docs.ethena.fi",
+  "description": "A synthetic dollar protocol on Ethereum, offering yield and stability through delta-neutral strategies.",
+  "category": "Stablecoin",
   "tags": [
     "defi",
-    "yield",
-    "aggregator",
-    "vaults"
+    "stablecoin",
+    "synthetic",
+    "yield"
   ],
-  "createdAt": "2020-07-17T00:00:00.000Z",
+  "createdAt": "2023-03-01T00:00:00.000Z",
   "updatedAt": "2025-07-06T12:00:00.000Z"
 }

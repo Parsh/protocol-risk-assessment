@@ -8,7 +8,7 @@
   "tokenSymbol": "UNI",
   "website": "https://uniswap.org",
   "documentation": "https://docs.uniswap.org",
-  "description": "The largest decentralized exchange (DEX) on Ethereum, using an Automated Market Maker (AMM) model.",
+  "description": "A leading decentralized exchange (DEX) using an Automated Market Maker (AMM) model for ERC-20 token swaps.",
   "category": "DEX",
   "tags": [
     "defi",
