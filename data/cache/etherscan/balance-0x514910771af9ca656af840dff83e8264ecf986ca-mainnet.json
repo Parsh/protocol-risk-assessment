@@ -4,6 +4,6 @@
     "message": "NOTOK",
     "result": "Max calls per sec rate limit reached (2/sec). Please switch to API V2, for more info https://docs.etherscan.io/etherscan-v2/v2-quickstart"
   },
-  "timestamp": "2025-07-11T14:32:34.336Z",
-  "expiresAt": "2025-07-11T14:37:34.336Z"
+  "timestamp": "2025-07-11T14:19:57.641Z",
+  "expiresAt": "2025-07-11T14:24:57.641Z"
 }

@@ -1,0 +1,741 @@
+{
+  "id": "assessment-1752244353650-f4f22cae",
+  "protocolId": "protocol-1",
+  "status": "COMPLETED",
+  "overallScore": 60,
+  "riskLevel": "HIGH",
+  "categoryScores": {
+    "technical": 20,
+    "governance": 65,
+    "liquidity": 66,
+    "reputation": 71
+  },
+  "recommendations": [
+    "⚠️ HIGH RISK - Exercise extreme caution and limit exposure",
+    "🔒 Review smart contract security - consider additional audits",
+    "📊 Consider implementing continuous monitoring for risk changes"
+  ],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "COMPREHENSIVE",
+    "executionTime": 61706,
+    "dataSourcesUsed": [
+      "blockchain",
+      "defillama",
+      "coingecko"
+    ],
+    "warnings": [
+      "Total findings: 34 (34 from analyzers, 0 from scoring)"
+    ]
+  },
+  "findings": [
+    {
+      "id": "vuln-1752244415357-0",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "weak-prng - High Severity",
+      "description": "UniswapV2Pair._update(uint256,uint256,uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#264-277) uses a weak PRNG: \"blockTimestamp = uint32(block.timestamp % 2 ** 32) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#266)\" \n",
+      "recommendation": "Review the flagged code and consult Slither documentation for specific remediation guidance",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "weak-prng",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 264,
+          "endLine": 277,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Potential security or code quality issue detected by weak-prng. This issue could lead to significant financial loss or contract compromise.",
+        "slitherId": "b056f7ffb4d94b331a4bc00abc6c24ad6610bb58c1fa79398cb612dfc26c0d6a"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-1",
+      "category": "TECHNICAL",
+      "severity": "MEDIUM",
+      "title": "incorrect-equality - Medium Severity",
+      "description": "UniswapV2Pair._safeTransfer(address,address,uint256) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#235-238) uses a dangerous strict equality:\n\t- require(bool,string)(success && (data.length == 0 || abi.decode(data,(bool))),UniswapV2: TRANSFER_FAILED) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#237)\n",
+      "recommendation": "Use appropriate comparison operators and consider tolerance for floating-point-like comparisons",
+      "source": "smart-contract-analyzer",
+      "confidence": 90,
+      "metadata": {
+        "detector": "incorrect-equality",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 235,
+          "endLine": 238,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Dangerous strict equality checks on floating point-like values. This issue could lead to unexpected behavior or potential exploits.",
+        "slitherId": "bb4327a6c3d73cc98a21096616019c16797a4d331dcac75ce87e5625c15153cc"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-2",
+      "category": "TECHNICAL",
+      "severity": "MEDIUM",
+      "title": "incorrect-equality - Medium Severity",
+      "description": "UniswapV2Pair.mint(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#301-322) uses a dangerous strict equality:\n\t- _totalSupply == 0 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#310)\n",
+      "recommendation": "Use appropriate comparison operators and consider tolerance for floating-point-like comparisons",
+      "source": "smart-contract-analyzer",
+      "confidence": 90,
+      "metadata": {
+        "detector": "incorrect-equality",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 301,
+          "endLine": 322,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Dangerous strict equality checks on floating point-like values. This issue could lead to unexpected behavior or potential exploits.",
+        "slitherId": "c823249e11652f12f409f0b911d1d6437aad80e6de2cb0e514d39dfad115a2ac"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-3",
+      "category": "TECHNICAL",
+      "severity": "MEDIUM",
+      "title": "reentrancy-no-eth - Medium Severity",
+      "description": "Reentrancy in UniswapV2Factory.createPair(address,address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#411-426):\n\tExternal calls:\n\t- IUniswapV2Pair(pair).initialize(token0,token1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#421)\n\tState variables written after the call(s):\n\t- getPair[token0][token1] = pair (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#422)\n\tUniswapV2Factory.getPair (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#398) can be used in cross function reentrancies:\n\t- UniswapV2Factory.createPair(address,address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#411-426)\n\t- UniswapV2Factory.getPair (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#398)\n\t- getPair[token1][token0] = pair (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#423)\n\tUniswapV2Factory.getPair (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#398) can be used in cross function reentrancies:\n\t- UniswapV2Factory.createPair(address,address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#411-426)\n\t- UniswapV2Factory.getPair (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#398)\n",
+      "recommendation": "Apply the Checks-Effects-Interactions pattern and consider using mutex locks",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "reentrancy-no-eth",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 411,
+          "endLine": 426,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "State inconsistency through reentrancy in state-changing functions. This issue could lead to unexpected behavior or potential exploits.",
+        "slitherId": "46819503e03cca3606aa79150f7beaa0297f88016bea39be10be0aa32c4ee6e4"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-4",
+      "category": "TECHNICAL",
+      "severity": "MEDIUM",
+      "title": "reentrancy-no-eth - Medium Severity",
+      "description": "Reentrancy in UniswapV2Pair.swap(uint256,uint256,address,bytes) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#350-378):\n\tExternal calls:\n\t- _safeTransfer(_token0,to,amount0Out) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#361)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\t- _safeTransfer(_token1,to,amount1Out) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#362)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\t- IUniswapV2Callee(to).uniswapV2Call(msg.sender,amount0Out,amount1Out,data) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#363)\n\tState variables written after the call(s):\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#376)\n\t\t- blockTimestampLast = blockTimestamp (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#275)\n\tUniswapV2Pair.blockTimestampLast (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#215) can be used in cross function reentrancies:\n\t- UniswapV2Pair._update(uint256,uint256,uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#264-277)\n\t- UniswapV2Pair.getReserves() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#229-233)\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#376)\n\t\t- reserve0 = uint112(balance0) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#273)\n\tUniswapV2Pair.reserve0 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#213) can be used in cross function reentrancies:\n\t- UniswapV2Pair._update(uint256,uint256,uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#264-277)\n\t- UniswapV2Pair.burn(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#325-347)\n\t- UniswapV2Pair.getReserves() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#229-233)\n\t- UniswapV2Pair.mint(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#301-322)\n\t- UniswapV2Pair.skim(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#381-386)\n\t- UniswapV2Pair.sync() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#389-391)\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#376)\n\t\t- reserve1 = uint112(balance1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#274)\n\tUniswapV2Pair.reserve1 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#214) can be used in cross function reentrancies:\n\t- UniswapV2Pair._update(uint256,uint256,uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#264-277)\n\t- UniswapV2Pair.burn(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#325-347)\n\t- UniswapV2Pair.getReserves() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#229-233)\n\t- UniswapV2Pair.mint(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#301-322)\n\t- UniswapV2Pair.skim(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#381-386)\n\t- UniswapV2Pair.sync() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#389-391)\n",
+      "recommendation": "Apply the Checks-Effects-Interactions pattern and consider using mutex locks",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "reentrancy-no-eth",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 350,
+          "endLine": 378,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "State inconsistency through reentrancy in state-changing functions. This issue could lead to unexpected behavior or potential exploits.",
+        "slitherId": "6b7b37f0e2f8bd2824b54e5c866ebafcdcc5fec8a92e90215721873109721180"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-5",
+      "category": "TECHNICAL",
+      "severity": "MEDIUM",
+      "title": "reentrancy-no-eth - Medium Severity",
+      "description": "Reentrancy in UniswapV2Pair.burn(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#325-347):\n\tExternal calls:\n\t- _safeTransfer(_token0,to,amount0) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#339)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\t- _safeTransfer(_token1,to,amount1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#340)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\tState variables written after the call(s):\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#344)\n\t\t- blockTimestampLast = blockTimestamp (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#275)\n\tUniswapV2Pair.blockTimestampLast (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#215) can be used in cross function reentrancies:\n\t- UniswapV2Pair._update(uint256,uint256,uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#264-277)\n\t- UniswapV2Pair.getReserves() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#229-233)\n\t- kLast = uint256(reserve0).mul(reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#345)\n\tUniswapV2Pair.kLast (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#219) can be used in cross function reentrancies:\n\t- UniswapV2Pair._mintFee(uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#280-298)\n\t- UniswapV2Pair.burn(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#325-347)\n\t- UniswapV2Pair.kLast (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#219)\n\t- UniswapV2Pair.mint(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#301-322)\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#344)\n\t\t- reserve0 = uint112(balance0) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#273)\n\tUniswapV2Pair.reserve0 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#213) can be used in cross function reentrancies:\n\t- UniswapV2Pair._update(uint256,uint256,uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#264-277)\n\t- UniswapV2Pair.burn(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#325-347)\n\t- UniswapV2Pair.getReserves() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#229-233)\n\t- UniswapV2Pair.mint(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#301-322)\n\t- UniswapV2Pair.skim(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#381-386)\n\t- UniswapV2Pair.sync() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#389-391)\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#344)\n\t\t- reserve1 = uint112(balance1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#274)\n\tUniswapV2Pair.reserve1 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#214) can be used in cross function reentrancies:\n\t- UniswapV2Pair._update(uint256,uint256,uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#264-277)\n\t- UniswapV2Pair.burn(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#325-347)\n\t- UniswapV2Pair.getReserves() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#229-233)\n\t- UniswapV2Pair.mint(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#301-322)\n\t- UniswapV2Pair.skim(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#381-386)\n\t- UniswapV2Pair.sync() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#389-391)\n",
+      "recommendation": "Apply the Checks-Effects-Interactions pattern and consider using mutex locks",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "reentrancy-no-eth",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 325,
+          "endLine": 347,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "State inconsistency through reentrancy in state-changing functions. This issue could lead to unexpected behavior or potential exploits.",
+        "slitherId": "c1cb5da41d4d92ecc61bfebd051abca6763fffd858e76ac5675243bfc1a583e5"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-6",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "missing-zero-check - Low Severity",
+      "description": "UniswapV2Factory.setFeeTo(address)._feeTo (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#428) lacks a zero-check on :\n\t\t- feeTo = _feeTo (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#430)\n",
+      "recommendation": "Add require statements to check for zero addresses where appropriate",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "missing-zero-check",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 428,
+          "endLine": 428,
+          "startColumn": 23,
+          "endColumn": 37
+        },
+        "impact": "Missing zero address checks may lead to unexpected behavior. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "10b4b3088552c9757b40d1bf8fb521801c62781c47a5b86ce218e0a94e5c7b2d"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-7",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "missing-zero-check - Low Severity",
+      "description": "UniswapV2Factory.constructor(address)._feeToSetter (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#403) lacks a zero-check on :\n\t\t- feeToSetter = _feeToSetter (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#404)\n",
+      "recommendation": "Add require statements to check for zero addresses where appropriate",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "missing-zero-check",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 403,
+          "endLine": 403,
+          "startColumn": 17,
+          "endColumn": 37
+        },
+        "impact": "Missing zero address checks may lead to unexpected behavior. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "176b86e3e781aec06aaeff0e6f1a40a67fb8e33003f2477d527db0ab6ba78ed0"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-8",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "missing-zero-check - Low Severity",
+      "description": "UniswapV2Pair.initialize(address,address)._token0 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#257) lacks a zero-check on :\n\t\t- token0 = _token0 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#259)\n",
+      "recommendation": "Add require statements to check for zero addresses where appropriate",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "missing-zero-check",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 257,
+          "endLine": 257,
+          "startColumn": 25,
+          "endColumn": 40
+        },
+        "impact": "Missing zero address checks may lead to unexpected behavior. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "84ef6e5221661ca738949962a57aef203b914cee5a5f397c15e7a651142e32df"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-9",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "missing-zero-check - Low Severity",
+      "description": "UniswapV2Pair.initialize(address,address)._token1 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#257) lacks a zero-check on :\n\t\t- token1 = _token1 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#260)\n",
+      "recommendation": "Add require statements to check for zero addresses where appropriate",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "missing-zero-check",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 257,
+          "endLine": 257,
+          "startColumn": 42,
+          "endColumn": 57
+        },
+        "impact": "Missing zero address checks may lead to unexpected behavior. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "8d2d416cec972c0ac36b497f8e7224f10fb4efcd0597d6db2a8785d44d1db91e"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-10",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "missing-zero-check - Low Severity",
+      "description": "UniswapV2Factory.setFeeToSetter(address)._feeToSetter (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#433) lacks a zero-check on :\n\t\t- feeToSetter = _feeToSetter (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#435)\n",
+      "recommendation": "Add require statements to check for zero addresses where appropriate",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "missing-zero-check",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 433,
+          "endLine": 433,
+          "startColumn": 29,
+          "endColumn": 49
+        },
+        "impact": "Missing zero address checks may lead to unexpected behavior. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "96d850db9be9b796719980290a5e189159032588ae5b6aa1e3832110e635ad5f"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-11",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "reentrancy-benign - Low Severity",
+      "description": "Reentrancy in UniswapV2Pair.burn(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#325-347):\n\tExternal calls:\n\t- _safeTransfer(_token0,to,amount0) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#339)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\t- _safeTransfer(_token1,to,amount1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#340)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\tState variables written after the call(s):\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#344)\n\t\t- price0CumulativeLast += uint256(UQ112x112.encode(_reserve1).uqdiv(_reserve0)) * timeElapsed (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#270)\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#344)\n\t\t- price1CumulativeLast += uint256(UQ112x112.encode(_reserve0).uqdiv(_reserve1)) * timeElapsed (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#271)\n",
+      "recommendation": "Review the function flow and consider adding reentrancy protection if needed",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "reentrancy-benign",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 325,
+          "endLine": 347,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Minor reentrancy that may cause unexpected behavior. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "07ae6238c644f73a7b8a851fa3b29ee1d99fa59c6fcebc825a83334ddf6706fd"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-12",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "reentrancy-benign - Low Severity",
+      "description": "Reentrancy in UniswapV2Factory.createPair(address,address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#411-426):\n\tExternal calls:\n\t- IUniswapV2Pair(pair).initialize(token0,token1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#421)\n\tState variables written after the call(s):\n\t- allPairs.push(pair) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#424)\n",
+      "recommendation": "Review the function flow and consider adding reentrancy protection if needed",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "reentrancy-benign",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 411,
+          "endLine": 426,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Minor reentrancy that may cause unexpected behavior. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "32c6a74c398db34fe2c74f02a13fb53d52c92cf4718f44aab2263c9c66c220fe"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-13",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "reentrancy-benign - Low Severity",
+      "description": "Reentrancy in UniswapV2Pair.swap(uint256,uint256,address,bytes) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#350-378):\n\tExternal calls:\n\t- _safeTransfer(_token0,to,amount0Out) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#361)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\t- _safeTransfer(_token1,to,amount1Out) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#362)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\t- IUniswapV2Callee(to).uniswapV2Call(msg.sender,amount0Out,amount1Out,data) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#363)\n\tState variables written after the call(s):\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#376)\n\t\t- price0CumulativeLast += uint256(UQ112x112.encode(_reserve1).uqdiv(_reserve0)) * timeElapsed (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#270)\n\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#376)\n\t\t- price1CumulativeLast += uint256(UQ112x112.encode(_reserve0).uqdiv(_reserve1)) * timeElapsed (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#271)\n",
+      "recommendation": "Review the function flow and consider adding reentrancy protection if needed",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "reentrancy-benign",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 350,
+          "endLine": 378,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Minor reentrancy that may cause unexpected behavior. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "973db69780b9d72e53858fb9c4b20af4679db078e3dc57985b0e6a40128fa7e5"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-14",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "reentrancy-events - Low Severity",
+      "description": "Reentrancy in UniswapV2Pair.burn(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#325-347):\n\tExternal calls:\n\t- _safeTransfer(_token0,to,amount0) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#339)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\t- _safeTransfer(_token1,to,amount1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#340)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\tEvent emitted after the call(s):\n\t- Burn(msg.sender,amount0,amount1,to) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#346)\n\t- Sync(reserve0,reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#276)\n\t\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#344)\n",
+      "recommendation": "Review the flagged code and consult Slither documentation for specific remediation guidance",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "reentrancy-events",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 325,
+          "endLine": 347,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Potential security or code quality issue detected by reentrancy-events. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "86c120342e20b30da9f0395a91824c389fbc70318abb2141fb123e69e218c3f9"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-15",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "reentrancy-events - Low Severity",
+      "description": "Reentrancy in UniswapV2Pair.swap(uint256,uint256,address,bytes) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#350-378):\n\tExternal calls:\n\t- _safeTransfer(_token0,to,amount0Out) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#361)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\t- _safeTransfer(_token1,to,amount1Out) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#362)\n\t\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n\t- IUniswapV2Callee(to).uniswapV2Call(msg.sender,amount0Out,amount1Out,data) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#363)\n\tEvent emitted after the call(s):\n\t- Swap(msg.sender,amount0In,amount1In,amount0Out,amount1Out,to) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#377)\n\t- Sync(reserve0,reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#276)\n\t\t- _update(balance0,balance1,_reserve0,_reserve1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#376)\n",
+      "recommendation": "Review the flagged code and consult Slither documentation for specific remediation guidance",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "reentrancy-events",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 350,
+          "endLine": 378,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Potential security or code quality issue detected by reentrancy-events. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "90bc2257846771c21c2209bccbc3057eb9b8525d3dcd29105dcf87cf87cc468a"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-16",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "reentrancy-events - Low Severity",
+      "description": "Reentrancy in UniswapV2Factory.createPair(address,address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#411-426):\n\tExternal calls:\n\t- IUniswapV2Pair(pair).initialize(token0,token1) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#421)\n\tEvent emitted after the call(s):\n\t- PairCreated(token0,token1,pair,allPairs.length) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#425)\n",
+      "recommendation": "Review the flagged code and consult Slither documentation for specific remediation guidance",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "reentrancy-events",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 411,
+          "endLine": 426,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Potential security or code quality issue detected by reentrancy-events. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "dcd711e777b78ab16513d13b81c51f4225bf7dbcc7e31047963dcbbc14029c95"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-17",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "timestamp - Low Severity",
+      "description": "UniswapV2Pair._update(uint256,uint256,uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#264-277) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- timeElapsed > 0 && _reserve0 != 0 && _reserve1 != 0 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#268)\n",
+      "recommendation": "Avoid using block.timestamp for critical logic or use block numbers with appropriate tolerances",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "timestamp",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 264,
+          "endLine": 277,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Block timestamp manipulation by miners could affect contract logic. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "127db149185fdcd0fa49ff8e349d7db9d6fb8a450257e4522318cf58168d03a3"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-18",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "timestamp - Low Severity",
+      "description": "UniswapV2Pair._safeTransfer(address,address,uint256) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#235-238) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- require(bool,string)(success && (data.length == 0 || abi.decode(data,(bool))),UniswapV2: TRANSFER_FAILED) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#237)\n",
+      "recommendation": "Avoid using block.timestamp for critical logic or use block numbers with appropriate tolerances",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "timestamp",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 235,
+          "endLine": 238,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Block timestamp manipulation by miners could affect contract logic. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "46fae96ebc19dc7cc7fb3f4c3199da4a8b470a43bca2502f3500b9395c9a9bb2"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-19",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "timestamp - Low Severity",
+      "description": "UniswapV2Pair.burn(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#325-347) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- require(bool,string)(amount0 > 0 && amount1 > 0,UniswapV2: INSUFFICIENT_LIQUIDITY_BURNED) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#337)\n",
+      "recommendation": "Avoid using block.timestamp for critical logic or use block numbers with appropriate tolerances",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "timestamp",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 325,
+          "endLine": 347,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Block timestamp manipulation by miners could affect contract logic. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "5710bba75ceefd9b9e094b49356c02b1c017d298c3a25a12f2c2d165407a68bc"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-20",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "timestamp - Low Severity",
+      "description": "UniswapV2Pair.mint(address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#301-322) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- _totalSupply == 0 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#310)\n\t- require(bool,string)(liquidity > 0,UniswapV2: INSUFFICIENT_LIQUIDITY_MINTED) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#316)\n",
+      "recommendation": "Avoid using block.timestamp for critical logic or use block numbers with appropriate tolerances",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "timestamp",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 301,
+          "endLine": 322,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Block timestamp manipulation by miners could affect contract logic. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "86049bcf1649b364e36038877b5c5a6ab897c7bfc96236196d945c2517931b46"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-21",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "timestamp - Low Severity",
+      "description": "UniswapV2Pair._mintFee(uint112,uint112) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#280-298) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- rootK > rootKLast (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#288)\n\t- liquidity > 0 (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#292)\n",
+      "recommendation": "Avoid using block.timestamp for critical logic or use block numbers with appropriate tolerances",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "timestamp",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 280,
+          "endLine": 298,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Block timestamp manipulation by miners could affect contract logic. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "cbd22fdc39db2e5703ee387367a09e7ac209f17dfe9d7d13ff32f3c5f1648530"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-22",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "timestamp - Low Severity",
+      "description": "UniswapV2ERC20.permit(address,address,uint256,uint256,uint8,bytes32,bytes32) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#187-199) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- require(bool,string)(deadline >= block.timestamp,UniswapV2: EXPIRED) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#188)\n",
+      "recommendation": "Avoid using block.timestamp for critical logic or use block numbers with appropriate tolerances",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "timestamp",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 187,
+          "endLine": 199,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Block timestamp manipulation by miners could affect contract logic. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "d73ce7773a85676de5318ff52ed246aef6c18177ded72910b91218aed9ccc2f9"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-23",
+      "category": "TECHNICAL",
+      "severity": "LOW",
+      "title": "timestamp - Low Severity",
+      "description": "UniswapV2Pair.swap(uint256,uint256,address,bytes) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#350-378) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- require(bool,string)(amount0Out < _reserve0 && amount1Out < _reserve1,UniswapV2: INSUFFICIENT_LIQUIDITY) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#353)\n\t- require(bool,string)(amount0In > 0 || amount1In > 0,UniswapV2: INSUFFICIENT_INPUT_AMOUNT) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#369)\n\t- require(bool,string)(balance0Adjusted.mul(balance1Adjusted) >= uint256(_reserve0).mul(_reserve1).mul(1000 ** 2),UniswapV2: K) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#373)\n\t- balance0 > _reserve0 - amount0Out (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#367)\n\t- balance1 > _reserve1 - amount1Out (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#368)\n",
+      "recommendation": "Avoid using block.timestamp for critical logic or use block numbers with appropriate tolerances",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "timestamp",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 350,
+          "endLine": 378,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Block timestamp manipulation by miners could affect contract logic. This issue represents a code quality concern or minor security risk.",
+        "slitherId": "da6c6954656e6560a824856f064cf2085f38f69f20fec5081afc8e0f974fe5d2"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-24",
+      "category": "TECHNICAL",
+      "severity": "INFO",
+      "title": "assembly - Informational Severity",
+      "description": "UniswapV2Factory.createPair(address,address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#411-426) uses assembly\n\t- INLINE ASM (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#418-420)\n",
+      "recommendation": "Review assembly code for safety and consider using Solidity alternatives where possible",
+      "source": "smart-contract-analyzer",
+      "confidence": 90,
+      "metadata": {
+        "detector": "assembly",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 411,
+          "endLine": 426,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Inline assembly bypasses Solidity safety checks. This is an informational finding for code improvement.",
+        "slitherId": "8c7689c9ffe2ddd600326aef46e389a342e5b46b352a49c0a01bd58ccad362db"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-25",
+      "category": "TECHNICAL",
+      "severity": "INFO",
+      "title": "assembly - Informational Severity",
+      "description": "UniswapV2ERC20.constructor() (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#130-144) uses assembly\n\t- INLINE ASM (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#132-134)\n",
+      "recommendation": "Review assembly code for safety and consider using Solidity alternatives where possible",
+      "source": "smart-contract-analyzer",
+      "confidence": 90,
+      "metadata": {
+        "detector": "assembly",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 130,
+          "endLine": 144,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Inline assembly bypasses Solidity safety checks. This is an informational finding for code improvement.",
+        "slitherId": "aad227b81d069d7a395568744f2b9f2c8dc13de31a9b1f8b7135da64e7365f85"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-26",
+      "category": "TECHNICAL",
+      "severity": "INFO",
+      "title": "low-level-calls - Informational Severity",
+      "description": "Low level call in UniswapV2Pair._safeTransfer(address,address,uint256) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#235-238):\n\t- (success,data) = token.call(abi.encodeWithSelector(SELECTOR,to,value)) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#236)\n",
+      "recommendation": "Review the flagged code and consult Slither documentation for specific remediation guidance",
+      "source": "smart-contract-analyzer",
+      "confidence": 90,
+      "metadata": {
+        "detector": "low-level-calls",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 235,
+          "endLine": 238,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Potential security or code quality issue detected by low-level-calls. This is an informational finding for code improvement.",
+        "slitherId": "727b2d3871f925f2a9b7f0f786c7a1f120106a37bfabdfcdeefd5e790ac48b67"
+      }
+    },
+    {
+      "id": "vuln-1752244415357-27",
+      "category": "TECHNICAL",
+      "severity": "INFO",
+      "title": "too-many-digits - Informational Severity",
+      "description": "UniswapV2Factory.createPair(address,address) (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#411-426) uses literals with too many digits:\n\t- bytecode = type(address)(UniswapV2Pair).creationCode (Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol#416)\n",
+      "recommendation": "Review the flagged code and consult Slither documentation for specific remediation guidance",
+      "source": "smart-contract-analyzer",
+      "confidence": 70,
+      "metadata": {
+        "detector": "too-many-digits",
+        "location": {
+          "filename": "Uniswap-contract-9cc5aA6f-7ea8d770-86a8-40bb-b78d-04f8b3008e7c.sol",
+          "startLine": 411,
+          "endLine": 426,
+          "startColumn": 5,
+          "endColumn": 6
+        },
+        "impact": "Potential security or code quality issue detected by too-many-digits. This is an informational finding for code improvement.",
+        "slitherId": "0b51d1732d456cf8843105701b535f6d5560f2ddb2b34abafdf96baf9b62afd9"
+      }
+    },
+    {
+      "id": "LIQ002",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "Low Trading Volume",
+      "description": "Daily volume to TVL ratio of 0.00% indicates low trading activity.",
+      "recommendation": "Implement volume incentives or improve market maker programs.",
+      "source": "liquidity-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "volume": 1068826872,
+        "liquidityRatio": 0,
+        "originalSeverity": "high",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "governance-analyzer-1752244411004-0",
+      "category": "LIQUIDITY",
+      "severity": "LOW",
+      "title": "Multi-Sig Configuration",
+      "description": "Multi-signature wallet detected but threshold could be optimized",
+      "recommendation": "Review identified risk factor",
+      "source": "governance-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "originalSeverity": "LOW",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "governance-analyzer-1752244411005-1",
+      "category": "GOVERNANCE",
+      "severity": "MEDIUM",
+      "title": "Moderate Governance Risk",
+      "description": "Some governance improvements recommended for better decentralization",
+      "recommendation": "Review identified risk factor",
+      "source": "governance-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "originalSeverity": "MEDIUM",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "REP002",
+      "category": "GOVERNANCE",
+      "severity": "MEDIUM",
+      "title": "Low Development Activity",
+      "description": "Last commit was 19 days ago with only 6 commits this month.",
+      "recommendation": "Verify project status and ensure active development continues.",
+      "source": "reputation-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "activity": 6,
+        "originalSeverity": "medium",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "REP006",
+      "category": "OPERATIONAL",
+      "severity": "INFO",
+      "title": "Strong Development Team",
+      "description": "Team of 36 developers with 6.3 years average experience.",
+      "recommendation": "Maintain team stability and continue knowledge sharing practices.",
+      "source": "reputation-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "teamSize": 36,
+        "experience": 6.305570929260748,
+        "originalSeverity": "info",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "REP007",
+      "category": "OPERATIONAL",
+      "severity": "INFO",
+      "title": "Strong Audit History",
+      "description": "Protocol has 3 security audits from reputable firms.",
+      "recommendation": "Continue regular audit schedule and address all findings promptly.",
+      "source": "reputation-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "originalSeverity": "info",
+        "analyzerVersion": "1.0.0"
+      }
+    }
+  ],
+  "createdAt": "2025-07-11T14:32:33.652Z",
+  "updatedAt": "2025-07-11T14:33:35.358Z",
+  "completedAt": "2025-07-11T14:33:35.358Z"
+}

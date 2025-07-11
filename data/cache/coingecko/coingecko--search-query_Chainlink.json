@@ -1,0 +1,57 @@
+{
+  "data": {
+    "coins": [
+      {
+        "id": "chainlink",
+        "name": "Chainlink",
+        "api_symbol": "chainlink",
+        "symbol": "LINK",
+        "market_cap_rank": 16,
+        "thumb": "https://coin-images.coingecko.com/coins/images/877/thumb/chainlink-new-logo.png",
+        "large": "https://coin-images.coingecko.com/coins/images/877/large/chainlink-new-logo.png"
+      },
+      {
+        "id": "chain-key-chainlink",
+        "name": "Chain-key Chainlink",
+        "api_symbol": "chain-key-chainlink",
+        "symbol": "CKLINK",
+        "market_cap_rank": null,
+        "thumb": "https://coin-images.coingecko.com/coins/images/50652/thumb/ckLINK.png",
+        "large": "https://coin-images.coingecko.com/coins/images/50652/large/ckLINK.png"
+      },
+      {
+        "id": "chainlink-plenty-bridge",
+        "name": "Chainlink (Plenty Bridge)",
+        "api_symbol": "chainlink-plenty-bridge",
+        "symbol": "LINK.E",
+        "market_cap_rank": null,
+        "thumb": "https://coin-images.coingecko.com/coins/images/29106/thumb/1975.png",
+        "large": "https://coin-images.coingecko.com/coins/images/29106/large/1975.png"
+      },
+      {
+        "id": "bridged-chainlink-lightlink",
+        "name": "Bridged Chainlink (Lightlink)",
+        "api_symbol": "bridged-chainlink-lightlink",
+        "symbol": "LINK.E",
+        "market_cap_rank": null,
+        "thumb": "https://coin-images.coingecko.com/coins/images/32024/thumb/link_ll.jpeg",
+        "large": "https://coin-images.coingecko.com/coins/images/32024/large/link_ll.jpeg"
+      },
+      {
+        "id": "wrapped-chainlink-universal",
+        "name": "Wrapped Chainlink (Universal)",
+        "api_symbol": "wrapped-chainlink-universal",
+        "symbol": "ULINK",
+        "market_cap_rank": null,
+        "thumb": "https://coin-images.coingecko.com/coins/images/52901/thumb/UA-LINK_1_%281%29.png",
+        "large": "https://coin-images.coingecko.com/coins/images/52901/large/UA-LINK_1_%281%29.png"
+      }
+    ],
+    "exchanges": [],
+    "icos": [],
+    "categories": [],
+    "nfts": []
+  },
+  "timestamp": "2025-07-11T14:20:01.076Z",
+  "expiresAt": "2025-07-11T14:25:01.076Z"
+}

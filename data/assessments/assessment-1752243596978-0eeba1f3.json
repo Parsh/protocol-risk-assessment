@@ -1,0 +1,154 @@
+{
+  "id": "assessment-1752243596978-0eeba1f3",
+  "protocolId": "chainlink-EcF986CA-mcywjliw",
+  "status": "COMPLETED",
+  "overallScore": 56,
+  "riskLevel": "MEDIUM",
+  "categoryScores": {
+    "technical": 95,
+    "governance": 72,
+    "liquidity": 49,
+    "reputation": 70
+  },
+  "recommendations": [
+    "🔒 Review smart contract security - consider additional audits",
+    "⚠️ Multiple high-severity issues detected (4) - comprehensive review needed",
+    "📊 Consider implementing continuous monitoring for risk changes"
+  ],
+  "metadata": {
+    "analysisVersion": "1.0.0",
+    "analysisDepth": "COMPREHENSIVE",
+    "executionTime": 9513,
+    "dataSourcesUsed": [
+      "blockchain",
+      "defillama",
+      "coingecko"
+    ],
+    "warnings": [
+      "Total findings: 8 (8 from analyzers, 0 from scoring)"
+    ]
+  },
+  "findings": [
+    {
+      "id": "tech-1752243606490-high-risk",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "High Technical Risk Detected",
+      "description": "Technical analysis resulted in high risk score of 95/100 with 0 vulnerabilities found",
+      "recommendation": "Conduct thorough security audit and address identified vulnerabilities",
+      "source": "technical-analyzer",
+      "confidence": 85,
+      "metadata": {
+        "vulnerabilityCount": 0,
+        "analyzedContracts": 1
+      }
+    },
+    {
+      "id": "LIQ001",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "Low Total Value Locked",
+      "description": "Protocol TVL of $0.0M is below recommended minimum for stable liquidity.",
+      "recommendation": "Monitor TVL growth and consider incentive programs to attract more liquidity.",
+      "source": "liquidity-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "tvl": 0,
+        "originalSeverity": "high",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "LIQ002",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "Low Trading Volume",
+      "description": "Daily volume to TVL ratio of 0.00% indicates low trading activity.",
+      "recommendation": "Implement volume incentives or improve market maker programs.",
+      "source": "liquidity-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "volume": 800353290,
+        "liquidityRatio": 0,
+        "originalSeverity": "high",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "governance-analyzer-1752243602292-0",
+      "category": "GOVERNANCE",
+      "severity": "MEDIUM",
+      "title": "Timelock Implementation",
+      "description": "Consider implementing timelock mechanisms for critical governance changes",
+      "recommendation": "Review identified risk factor",
+      "source": "governance-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "originalSeverity": "MEDIUM",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "governance-analyzer-1752243602292-1",
+      "category": "TECHNICAL",
+      "severity": "HIGH",
+      "title": "High Governance Risk",
+      "description": "Multiple governance issues detected requiring immediate attention",
+      "recommendation": "Review identified risk factor",
+      "source": "governance-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "originalSeverity": "HIGH",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "REP002",
+      "category": "GOVERNANCE",
+      "severity": "MEDIUM",
+      "title": "Low Development Activity",
+      "description": "Last commit was 22 days ago with only 8 commits this month.",
+      "recommendation": "Verify project status and ensure active development continues.",
+      "source": "reputation-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "activity": 8,
+        "originalSeverity": "medium",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "REP006",
+      "category": "OPERATIONAL",
+      "severity": "INFO",
+      "title": "Strong Development Team",
+      "description": "Team of 34 developers with 5.4 years average experience.",
+      "recommendation": "Maintain team stability and continue knowledge sharing practices.",
+      "source": "reputation-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "teamSize": 34,
+        "experience": 5.352603653410722,
+        "originalSeverity": "info",
+        "analyzerVersion": "1.0.0"
+      }
+    },
+    {
+      "id": "REP007",
+      "category": "OPERATIONAL",
+      "severity": "INFO",
+      "title": "Strong Audit History",
+      "description": "Protocol has 3 security audits from reputable firms.",
+      "recommendation": "Continue regular audit schedule and address all findings promptly.",
+      "source": "reputation-analyzer",
+      "confidence": 75,
+      "metadata": {
+        "originalSeverity": "info",
+        "analyzerVersion": "1.0.0"
+      }
+    }
+  ],
+  "createdAt": "2025-07-11T14:19:56.979Z",
+  "updatedAt": "2025-07-11T14:20:06.492Z",
+  "completedAt": "2025-07-11T14:20:06.492Z"
+}

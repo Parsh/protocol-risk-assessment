@@ -1,0 +1,22 @@
+{
+  "id": "chainlink-EcF986CA-mcywjliw",
+  "createdAt": "2025-07-11T14:18:30.200Z",
+  "updatedAt": "2025-07-11T14:19:49.277Z",
+  "name": "Chainlink",
+  "contractAddresses": [
+    "0x514910771af9ca656af840dff83e8264ecf986ca"
+  ],
+  "blockchain": "ethereum",
+  "tokenSymbol": "LINK",
+  "website": "https://chain.link",
+  "documentation": "https://docs.chain.link",
+  "description": "Decentralized oracle network connecting smart contracts with real-world data.",
+  "category": "OTHER",
+  "tags": [
+    "defi",
+    "oracle",
+    "data",
+    "ethereum",
+    "updated"
+  ]
+}
