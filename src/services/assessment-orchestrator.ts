@@ -26,6 +26,7 @@ import { RiskScoringEngine, ScoringInput } from './risk-scoring-engine';
 import { UnifiedBlockchainClient, createUnifiedBlockchainClient } from './unified-blockchain-client';
 import { UnifiedDeFiDataClient } from './unified-defi-data-client';
 import { smartContractAnalyzer } from '../analyzers/smart-contract';
+import { SlitherImpact, SlitherConfidence } from '../analyzers/smart-contract/types';
 import { simpleGovernanceAnalyzer } from '../analyzers/governance';
 import { liquidityAnalyzer } from '../analyzers/liquidity';
 import { reputationAnalyzer } from '../analyzers/reputation';
@@ -468,11 +469,16 @@ export class AssessmentOrchestrator {
       // Stage 3-6: Parallel Risk Analysis
       progress.currentStage = 'Risk Analysis (Parallel Execution)';
       progress.progress = 50;
-      
-      logger.info('Starting parallel risk analysis', { 
-        assessmentId, 
+       logger.info('Starting parallel risk analysis', {
+        assessmentId,
         protocolId: protocol.id,
         analyzers: ['technical', 'liquidity', 'governance', 'reputation']
+      });
+
+      logger.debug('=== ABOUT TO START PARALLEL ANALYSIS ===', {
+        protocolId: protocol.id,
+        hasBlockchainData: !!blockchainData,
+        hasDefiData: !!defiData
       });
 
       // Execute all analyzers in parallel for better performance and collect findings
@@ -527,8 +533,12 @@ export class AssessmentOrchestrator {
       // Stage 7: Risk Calculation with aggregated findings
       await this.calculateFinalRiskWithFindings(progress, assessmentId, protocol, categoryScores, aggregatedFindings);
 
-      // Complete the assessment
-      await this.completeAssessment(assessmentId, protocol, request);
+      // Assessment should now be complete - no need to call completeAssessment
+      logger.info('Assessment processing completed successfully', { 
+        assessmentId, 
+        protocolId: protocol.id,
+        totalFindings: aggregatedFindings.length
+      });
 
     } catch (error) {
       await this.handleAssessmentError(assessmentId, error);
@@ -733,10 +743,24 @@ export class AssessmentOrchestrator {
     progress.currentStage = 'Technical Analysis';
     progress.progress = 35;
 
+    logger.debug('=== ENTERING analyzeTechnicalWithFindings ===', {
+      protocolId: protocol.id,
+      contractAddressesCount: protocol.contractAddresses.length,
+      hasBlockchainData: !!blockchainData,
+      blockchainDataKeys: Object.keys(blockchainData || {})
+    });
+
     try {
       logger.info('Starting technical analysis', { 
         protocolId: protocol.id, 
         contractCount: protocol.contractAddresses.length 
+      });
+
+      console.log('=== CONSOLE LOG TEST ===', protocol.id);
+
+      logger.debug('=== AFTER STARTING TECHNICAL ANALYSIS ===', {
+        protocolId: protocol.id,
+        contractAddresses: protocol.contractAddresses
       });
 
       let totalVulnerabilities = 0;
@@ -745,8 +769,27 @@ export class AssessmentOrchestrator {
 
       // Analyze each contract using smart contract analyzer
       for (const contractAddress of protocol.contractAddresses) {
+        logger.debug('=== INSIDE CONTRACT LOOP ===', {
+          contractAddress,
+          protocolId: protocol.id,
+          loopIteration: protocol.contractAddresses.indexOf(contractAddress)
+        });
+        
+        logger.debug('About to analyze contract', {
+          contractAddress,
+          protocolId: protocol.id,
+          hasBlockchainData: !!blockchainData[contractAddress]
+        });
+        
         try {
           const contractData = blockchainData[contractAddress];
+          
+          logger.debug('About to call smart contract analyzer', {
+            contractAddress,
+            hasContractData: !!contractData,
+            contractDataKeys: contractData ? Object.keys(contractData) : null
+          });
+          
           const analysisResult = await smartContractAnalyzer.analyzeContract({
             contractAddress,
             blockchain: protocol.blockchain,
@@ -755,9 +798,48 @@ export class AssessmentOrchestrator {
             compilerVersion: contractData?.metadata?.compilerVersion
           });
 
+          logger.debug('Smart contract analyzer returned', {
+            contractAddress,
+            hasAnalysisResult: !!analysisResult,
+            analysisResultKeys: analysisResult ? Object.keys(analysisResult) : null,
+            hasVulnerabilities: !!analysisResult?.vulnerabilities,
+            vulnerabilitiesLength: analysisResult?.vulnerabilities?.length || 0
+          });
+
+          logger.debug('Smart contract analysis result', {
+            contractAddress,
+            hasVulnerabilities: !!analysisResult.vulnerabilities,
+            vulnerabilitiesCount: analysisResult.vulnerabilities?.length || 0,
+            vulnerabilitiesType: Array.isArray(analysisResult.vulnerabilities) ? 'array' : typeof analysisResult.vulnerabilities,
+            sampleVulnerability: analysisResult.vulnerabilities?.[0] ? {
+              detector: analysisResult.vulnerabilities[0].detector,
+              severity: analysisResult.vulnerabilities[0].severity,
+              keys: Object.keys(analysisResult.vulnerabilities[0])
+            } : null,
+            analysisResultKeys: Object.keys(analysisResult)
+          });
+
           if (analysisResult.vulnerabilities) {
+            logger.debug('Contract analysis result has vulnerabilities', {
+              contractAddress,
+              vulnerabilitiesArray: Array.isArray(analysisResult.vulnerabilities),
+              vulnerabilitiesLength: analysisResult.vulnerabilities.length,
+              firstVulnStructure: analysisResult.vulnerabilities[0] ? {
+                keys: Object.keys(analysisResult.vulnerabilities[0]),
+                detector: analysisResult.vulnerabilities[0].detector,
+                severity: analysisResult.vulnerabilities[0].severity,
+                severityType: typeof analysisResult.vulnerabilities[0].severity
+              } : null
+            });
             allVulnerabilities.push(...analysisResult.vulnerabilities);
             totalVulnerabilities += analysisResult.vulnerabilities.length;
+          } else {
+            logger.debug('Contract analysis result has no vulnerabilities', {
+              contractAddress,
+              analysisResultKeys: Object.keys(analysisResult),
+              hasVulnerabilities: 'vulnerabilities' in analysisResult,
+              vulnerabilitiesValue: analysisResult.vulnerabilities
+            });
           }
           analyzedContracts++;
 
@@ -794,6 +876,20 @@ export class AssessmentOrchestrator {
       // Generate findings based on vulnerabilities
       const findings: Finding[] = [];
       
+      logger.debug('Processing vulnerabilities for findings', {
+        allVulnerabilitiesLength: allVulnerabilities.length,
+        totalVulnerabilities,
+        vulnerabilityTypes: allVulnerabilities.map(v => typeof v),
+        firstVuln: allVulnerabilities[0] ? {
+          hasDetector: 'detector' in allVulnerabilities[0],
+          hasSeverity: 'severity' in allVulnerabilities[0],
+          keys: Object.keys(allVulnerabilities[0]),
+          detector: allVulnerabilities[0].detector,
+          severity: allVulnerabilities[0].severity,
+          severityType: typeof allVulnerabilities[0].severity
+        } : null
+      });
+      
       if (score > 80) {
         findings.push({
           id: `tech-${Date.now()}-high-risk`,
@@ -820,21 +916,54 @@ export class AssessmentOrchestrator {
         });
       }
 
-      // Add findings for specific vulnerabilities
+      // Add findings for specific vulnerabilities (include ALL severities)
+      logger.debug('Processing vulnerabilities for findings', {
+        allVulnerabilitiesLength: allVulnerabilities.length,
+        vulnerabilityTypes: allVulnerabilities.map(v => typeof v),
+        firstVuln: allVulnerabilities[0] ? {
+          hasDetector: 'detector' in allVulnerabilities[0],
+          hasSeverity: 'severity' in allVulnerabilities[0],
+          keys: Object.keys(allVulnerabilities[0])
+        } : null
+      });
+      
       allVulnerabilities.forEach((vuln, index) => {
-        if (vuln.severity === 'HIGH' || vuln.severity === 'CRITICAL') {
-          findings.push({
-            id: `vuln-${Date.now()}-${index}`,
-            category: FindingCategory.TECHNICAL,
-            severity: vuln.severity === 'CRITICAL' ? FindingSeverity.CRITICAL : FindingSeverity.HIGH,
-            title: vuln.title || 'Security Vulnerability',
-            description: vuln.description || 'Security vulnerability detected in smart contract',
-            recommendation: vuln.recommendation || 'Address the identified vulnerability',
-            source: 'smart-contract-analyzer',
-            confidence: 90,
-            metadata: { contract: vuln.contract, line: vuln.line }
-          });
+        // Map Slither impact levels to Finding severity levels
+        let findingSeverity: FindingSeverity;
+        switch (vuln.severity) {
+          case SlitherImpact.HIGH:
+            findingSeverity = FindingSeverity.HIGH;
+            break;
+          case SlitherImpact.MEDIUM:
+            findingSeverity = FindingSeverity.MEDIUM;
+            break;
+          case SlitherImpact.LOW:
+            findingSeverity = FindingSeverity.LOW;
+            break;
+          case SlitherImpact.INFORMATIONAL:
+          case SlitherImpact.OPTIMIZATION:
+            findingSeverity = FindingSeverity.INFO;
+            break;
+          default:
+            findingSeverity = FindingSeverity.LOW;
         }
+
+        findings.push({
+          id: `vuln-${Date.now()}-${index}`,
+          category: FindingCategory.TECHNICAL,
+          severity: findingSeverity,
+          title: `${vuln.detector} - ${vuln.severity} Severity`,
+          description: vuln.description,
+          recommendation: vuln.recommendation,
+          source: 'smart-contract-analyzer',
+          confidence: vuln.confidence === SlitherConfidence.HIGH ? 90 : vuln.confidence === SlitherConfidence.MEDIUM ? 70 : 50,
+          metadata: { 
+            detector: vuln.detector,
+            location: vuln.location,
+            impact: vuln.impact,
+            slitherId: vuln.id
+          }
+        });
       });
 
       logger.info('Technical analysis completed', {
@@ -1006,6 +1135,20 @@ export class AssessmentOrchestrator {
     const scoringFindings = this.generateFindingsFromScores(protocol, categoryScores);
     const allFindings = [...aggregatedFindings, ...scoringFindings];
     
+    logger.debug('=== BEFORE RISK SCORING ===', {
+      assessmentId,
+      aggregatedFindingsLength: aggregatedFindings.length,
+      scoringFindingsLength: scoringFindings.length,
+      allFindingsLength: allFindings.length,
+      sampleAggregatedFinding: aggregatedFindings[0] ? {
+        id: aggregatedFindings[0].id,
+        category: aggregatedFindings[0].category,
+        severity: aggregatedFindings[0].severity,
+        title: aggregatedFindings[0].title,
+        source: aggregatedFindings[0].source
+      } : null
+    });
+    
     // Prepare scoring input with all findings
     const scoringInput: ScoringInput = {
       findings: allFindings,
@@ -1026,13 +1169,44 @@ export class AssessmentOrchestrator {
     assessment.riskLevel = riskResult.riskLevel;
     assessment.recommendations = riskResult.recommendations;
     assessment.findings = allFindings; // Use aggregated findings
+    assessment.status = AssessmentStatus.COMPLETED; // Mark as completed here
+    assessment.completedAt = new Date();
     assessment.metadata.executionTime = Date.now() - assessment.createdAt.getTime();
     assessment.metadata.dataSourcesUsed = ['blockchain', 'defillama', 'coingecko'];
     assessment.metadata.warnings = assessment.metadata.warnings || [];
     assessment.metadata.warnings.push(`Total findings: ${allFindings.length} (${aggregatedFindings.length} from analyzers, ${scoringFindings.length} from scoring)`);
     assessment.updatedAt = new Date();
 
+    logger.debug('=== BEFORE SAVING ASSESSMENT ===', {
+      assessmentId,
+      assessmentFindingsLength: assessment.findings?.length || 0,
+      allFindingsLength: allFindings.length,
+      assessmentOverallScore: assessment.overallScore,
+      assessmentRiskLevel: assessment.riskLevel,
+      sampleAssessmentFinding: assessment.findings?.[0] ? {
+        id: assessment.findings[0].id,
+        category: assessment.findings[0].category,
+        severity: assessment.findings[0].severity,
+        title: assessment.findings[0].title,
+        source: assessment.findings[0].source
+      } : null
+    });
+
     await this.assessmentRepo.save(assessmentId, assessment);
+
+    logger.debug('=== AFTER SAVING ASSESSMENT ===', {
+      assessmentId,
+      savedSuccessfully: true
+    });
+
+    // Update progress to completed
+    progress.status = AssessmentStatus.COMPLETED;
+    progress.progress = 100;
+    progress.currentStage = 'Completed';
+    progress.completedAt = new Date();
+
+    // Remove from active assessments
+    this.activeAssessments.delete(assessmentId);
 
     logger.info('Risk calculation with findings completed', { 
       assessmentId,
@@ -1083,45 +1257,32 @@ export class AssessmentOrchestrator {
     if (!progress || !assessment) return;
 
     try {
-      // Generate mock findings (TODO: Replace with actual analyzer results)
-      const mockCategoryScores: CategoryScores = {
-        technical: Math.floor(Math.random() * 40) + 60,
-        governance: Math.floor(Math.random() * 40) + 50,
-        liquidity: Math.floor(Math.random() * 30) + 40,
-        reputation: Math.floor(Math.random() * 35) + 45
-      };
-      const mockFindings = this.generateMockFindings(protocol, mockCategoryScores);
-      
-      // Prepare scoring input with protocol metadata
-      const scoringInput: ScoringInput = {
-        findings: mockFindings,
-        protocolMetadata: {
-          ageInDays: this.calculateProtocolAge(protocol),
-          tvlUsd: this.estimateTvl(protocol),
-          auditCount: this.estimateAuditCount(protocol)
-        }
-      };
-
-      // Use RiskScoringEngine for comprehensive scoring
-      const scoringResult = await this.riskScoringEngine.calculateRiskScore(scoringInput);
-
-      // Update assessment with scoring results
+      // Assessment data should already be set by calculateFinalRiskWithFindings
+      // Just complete the status and cleanup
       assessment.status = AssessmentStatus.COMPLETED;
-      assessment.overallScore = scoringResult.overallScore;
-      assessment.riskLevel = scoringResult.riskLevel;
-      assessment.categoryScores = scoringResult.categoryScores;
-      assessment.findings = scoringResult.criticalFindings.concat(mockFindings);
-      assessment.recommendations = scoringResult.recommendations;
       assessment.completedAt = new Date();
       assessment.updatedAt = new Date();
 
-      // Add scoring confidence to metadata
-      assessment.metadata.warnings = assessment.metadata.warnings || [];
-      assessment.metadata.warnings.push(
-        `Scoring confidence: ${scoringResult.scoringBreakdown.confidence}%`
-      );
+      logger.debug('=== ABOUT TO SAVE FINAL ASSESSMENT ===', {
+        assessmentId,
+        currentFindingsCount: assessment.findings?.length || 0,
+        currentScore: assessment.overallScore,
+        currentRiskLevel: assessment.riskLevel,
+        sampleFinding: assessment.findings?.[0] ? {
+          id: assessment.findings[0].id,
+          category: assessment.findings[0].category,
+          severity: assessment.findings[0].severity,
+          title: assessment.findings[0].title,
+          source: assessment.findings[0].source
+        } : null
+      });
 
       await this.assessmentRepo.save(assessmentId, assessment);
+
+      logger.debug('=== SAVED FINAL ASSESSMENT ===', {
+        assessmentId,
+        savedSuccessfully: true
+      });
 
       // Update progress
       progress.status = AssessmentStatus.COMPLETED;
@@ -1135,10 +1296,9 @@ export class AssessmentOrchestrator {
       logger.info('Assessment completed successfully', { 
         assessmentId, 
         protocolId: protocol.id, 
-        overallScore: scoringResult.overallScore, 
-        riskLevel: scoringResult.riskLevel,
-        confidence: scoringResult.scoringBreakdown.confidence,
-        findingsCount: mockFindings.length
+        overallScore: assessment.overallScore, 
+        riskLevel: assessment.riskLevel,
+        findingsCount: assessment.findings?.length || 0
       });
 
     } catch (error) {
@@ -1242,9 +1402,8 @@ export class AssessmentOrchestrator {
    * Generate findings based on category scores
    */
   private generateFindingsFromScores(protocol: Protocol, scores: CategoryScores): Finding[] {
-    // For now, use the same logic as generateMockFindings
-    // In the future, this would use actual analyzer results
-    return this.generateMockFindings(protocol, scores);
+    // No longer generate mock findings - real findings come from analyzers
+    return [];
   }
 
   /**
