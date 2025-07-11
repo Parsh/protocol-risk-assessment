@@ -19,6 +19,10 @@ dist/
 !data/protocols/index.json
 !data/protocols/protocol-*.json
 
+# Cache files (can be large and regenerated)
+data/cache/
+*.cache
+
 # Test data (generated during testing)
 test-data/
 
